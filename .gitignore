@@ -1,0 +1,19 @@
+# Runtime artifacts
+_workspace/
+outputs/
+
+# Local samples that may contain private writing
+samples/private/
+*.local.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs / caches
+*.log
+__pycache__/
+*.pyc
+

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Write As Me KO"
+  short_description: "한국어 개인 문체로 초안 작성"
+  default_prompt: "Use $write-as-me-ko to rewrite this Korean draft in my voice while preserving facts."
+policy:
+  allow_implicit_invocation: true
+
