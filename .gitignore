@@ -1,6 +1,7 @@
 # Runtime artifacts
 _workspace/
 outputs/
+dist/
 
 # Local samples that may contain private writing
 samples/private/
@@ -16,4 +17,3 @@ Thumbs.db
 *.log
 __pycache__/
 *.pyc
-

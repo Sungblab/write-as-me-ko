@@ -1,14 +1,50 @@
 # write-as-me-ko
 
-Korean-first local author context pack for AI agents.
+한국어 사용자를 위한 로컬-first 개인 문체 컨텍스트 팩입니다.
 
-This project is inspired by [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai), especially its Korean AI-writing tell detection and rewriting approach. `im-not-ai` focuses on reducing AI tells after a draft already exists. `write-as-me-ko` starts one step earlier: it helps Korean users turn their own writing samples, judgment rules, and output formats into reusable local context so agents can draft closer to their actual voice from the beginning.
+이 프로젝트는 [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai)의 한국어 AI 문체 탐지/윤문 접근에서 영감을 받았습니다. `im-not-ai`가 이미 생성된 글의 AI 티를 줄이는 후처리 도구에 가깝다면, `write-as-me-ko`는 사용자의 글 샘플, 판단 기준, 산출물 형식을 에이전트가 처음부터 참고하도록 만드는 것을 목표로 합니다.
 
-The goal is not to pretend AI text is human. The goal is to stop repeating the same tone instructions every session and make reports, essays, blog posts, messages, and project documents follow the user's real Korean writing habits more consistently.
+목표는 AI 글을 사람 글처럼 속이는 것이 아닙니다. 매번 같은 말투 설명을 반복하지 않아도 보고서, 에세이, 블로그, 메시지, 프로젝트 문서가 사용자의 실제 한국어 습관에 더 가까워지게 만드는 것입니다.
 
-## MVP
+## Quickstart
 
-The first version is a Codex skill:
+샘플 글을 넣습니다.
+
+```text
+samples/
+  blog/
+  report/
+  message/
+```
+
+프로필 초안을 생성합니다.
+
+```powershell
+python -m scripts.build_voice_profile --samples samples --output codex\skills\write-as-me-ko\references\voice-profile.md
+```
+
+Codex skill로 설치합니다.
+
+```powershell
+.\scripts\install_codex.ps1 -Force
+```
+
+일반 에이전트용 컨텍스트 파일이 필요하면 export 합니다.
+
+```powershell
+python -m scripts.export_agent_context --output dist\AGENTS.write-as-me-ko.md
+```
+
+이후 Codex에서 다음처럼 사용합니다.
+
+```text
+$write-as-me-ko 이 메모를 교수님께 보낼 격식체 메시지로 정리해줘.
+$write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.
+```
+
+## MVP Scope
+
+현재 버전은 Codex skill과 프로필 생성 스크립트를 제공합니다.
 
 ```text
 codex/skills/write-as-me-ko/
@@ -18,14 +54,18 @@ codex/skills/write-as-me-ko/
     format-routes.md
     judgment-rules.md
     voice-profile.md
+scripts/
+  build_voice_profile.py
+  export_agent_context.py
+  install_codex.ps1
 ```
 
-Use it to:
+할 수 있는 일:
 
-- draft Korean reports, essays, blog posts, and messages in a user-specific style
-- rewrite generic AI drafts using a local voice profile
-- keep formal Korean formal, casual Korean casual, and technical writing precise
-- avoid common Korean AI tells such as translationese, mechanical transitions, inflated claims, and over-structured endings
+- 한국어 보고서, 에세이, 블로그, 메시지 초안 작성
+- 일반적인 AI 초안을 로컬 voice profile 기준으로 재작성
+- 격식체는 격식체로, 구어체는 구어체로 유지
+- 번역투, 기계적 전환, 과장된 주장, 반복적인 결말 같은 한국어 AI 티 점검
 
 ## Repository Layout
 
@@ -40,7 +80,15 @@ eval/
 codex/skills/write-as-me-ko/
 ```
 
-Add real samples under `samples/`, then update `codex/skills/write-as-me-ko/references/voice-profile.md` with patterns that are actually visible in those samples.
+실제 샘플을 `samples/` 아래에 넣고 `scripts.build_voice_profile`을 실행하면 `codex/skills/write-as-me-ko/references/voice-profile.md` 초안이 갱신됩니다. 생성된 프로필은 그대로 믿기보다 한 번 읽고 수정하는 것을 전제로 합니다.
+
+## Verification
+
+```powershell
+python -m unittest discover -s tests -v
+.\scripts\smoke_profile.ps1
+python -m scripts.export_agent_context --output _workspace\AGENTS.write-as-me-ko.smoke.md
+```
 
 ## Non-goals
 
@@ -48,4 +96,3 @@ Add real samples under `samples/`, then update `codex/skills/write-as-me-ko/refe
 - No plagiarism or author impersonation
 - No AI-detector bypass guarantee
 - No promise that one profile fits every genre
-
