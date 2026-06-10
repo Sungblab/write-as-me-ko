@@ -82,6 +82,12 @@ codex/skills/write-as-me-ko/
 
 실제 샘플을 `samples/` 아래에 넣고 `scripts.build_voice_profile`을 실행하면 `codex/skills/write-as-me-ko/references/voice-profile.md` 초안이 갱신됩니다. 생성된 프로필은 그대로 믿기보다 한 번 읽고 수정하는 것을 전제로 합니다.
 
+## Project Docs
+
+- [Product goal](docs/product-goal.md)
+- [Development roadmap](docs/development-roadmap.md)
+- [Architecture](docs/architecture.md)
+
 ## Verification
 
 ```powershell

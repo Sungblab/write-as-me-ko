@@ -114,6 +114,71 @@ def detect_voice_notes(text: str) -> list[str]:
     return notes
 
 
+def detect_route_signals(sample: Sample) -> list[str]:
+    signals: list[str] = []
+    text = sample.text
+    if sample.route == "blog":
+        if any(word in text for word in ("나는", "내가", "생각", "느꼈", "바뀌었다")):
+            signals.append("1인칭 판단 흐름과 생각이 바뀐 지점을 살릴 수 있습니다.")
+        if any(word in text for word in ("처음", "그런데", "막상", "실제로")):
+            signals.append("구체적인 계기에서 출발해 판단으로 넘어가는 흐름이 보입니다.")
+    elif sample.route == "report":
+        if any(word in text for word in ("근거", "한계", "결과", "구현", "검증")):
+            signals.append("근거와 한계를 분리하고 결과를 먼저 정리하는 편이 맞습니다.")
+        if any(word in text for word in ("보고서", "설명한다", "분석", "확인")):
+            signals.append("격식체를 유지하되 추상적인 의의보다 확인 가능한 내용을 우선합니다.")
+    elif sample.route == "message":
+        if any(word in text for word in ("교수님", "부탁", "확인", "감사", "정리")):
+            signals.append("요청과 다음 행동을 짧게 붙이는 메시지 형식이 맞습니다.")
+        if any(word in text for word in ("오늘", "내일", "다시", "필요")):
+            signals.append("일정이나 후속 행동을 구체적으로 적는 편이 좋습니다.")
+    elif sample.route == "project":
+        if any(word in text for word in ("구현", "검증", "파일", "명령", "테스트")):
+            signals.append("프로젝트 문서는 변경점, 검증, 남은 한계를 분리합니다.")
+    return signals
+
+
+def summarize_route_signals(samples: list[Sample]) -> list[str]:
+    route_to_signals: dict[str, Counter[str]] = {}
+    for sample in samples:
+        signals = detect_route_signals(sample)
+        if not signals:
+            continue
+        route_to_signals.setdefault(sample.route, Counter()).update(signals)
+
+    lines: list[str] = []
+    for route in ROUTE_ORDER:
+        signals = route_to_signals.get(route)
+        if not signals:
+            continue
+        lines.append(f"### {route}")
+        lines.extend(f"- {signal}" for signal, _ in signals.most_common(3))
+        lines.append("")
+    return lines or ["- 아직 route별 신호가 부족합니다.", ""]
+
+
+def summarize_privacy_notes(samples: list[Sample], samples_root: Path) -> list[str]:
+    private_samples = []
+    for sample in samples:
+        try:
+            rel = sample.path.relative_to(samples_root)
+        except ValueError:
+            rel = sample.path
+        if any(part.lower() == "private" for part in rel.parts):
+            private_samples.append(str(rel).replace("\\", "/"))
+
+    if not private_samples:
+        return [
+            "- 민감한 원문 샘플은 `samples/private/` 또는 `*.local.md`에 두고 git에 올리지 마세요.",
+        ]
+
+    lines = [
+        "- private 경로의 샘플을 분석했습니다. 원문은 로컬에만 두고 git에 올리지 마세요.",
+    ]
+    lines.extend(f"- private sample: `{path}`" for path in private_samples)
+    return lines
+
+
 def build_profile_markdown(samples_root: Path) -> str:
     samples = collect_samples(samples_root)
     all_text = "\n\n".join(sample.text for sample in samples)
@@ -129,6 +194,8 @@ def build_profile_markdown(samples_root: Path) -> str:
     phrase_lines = [f"- {phrase}" for phrase in phrases] or ["- 샘플 부족"]
     note_lines = [f"- {note}" for note in notes]
     route_lines = summarize_route_counts(samples)
+    route_signal_lines = summarize_route_signals(samples)
+    privacy_lines = summarize_privacy_notes(samples, samples_root)
 
     return "\n".join(
         [
@@ -159,6 +226,13 @@ def build_profile_markdown(samples_root: Path) -> str:
             "## 관찰된 문체/판단 패턴",
             "",
             *note_lines,
+            "",
+            "## Route-Specific Signals",
+            "",
+            *route_signal_lines,
+            "## Privacy Notes",
+            "",
+            *privacy_lines,
             "",
             "## Drafting Guidance",
             "",
