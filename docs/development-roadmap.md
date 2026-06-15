@@ -24,7 +24,7 @@ Acceptance:
 
 ## Stage 2: Reviewable Author Profile
 
-Status: current active development stage.
+Status: implemented.
 
 Scope:
 
@@ -42,6 +42,8 @@ Acceptance:
 
 ## Stage 3: Portable Agent Context Pack
 
+Status: implemented.
+
 Scope:
 
 - Keep Codex as the first-class install target.
@@ -57,6 +59,8 @@ Acceptance:
 
 ## Stage 4: Evaluation Loop
 
+Status: implemented.
+
 Scope:
 
 - Add before/after examples under `eval/`.
@@ -66,9 +70,11 @@ Scope:
 
 Acceptance:
 
-- A maintainer can run one command and inspect generated evaluation artifacts.
-- Evaluation does not require private sample text to be committed.
-- Failures point to concrete profile or rule gaps.
+- `python -m scripts.run_eval` writes `_workspace/eval/evaluation-report.md`.
+- Evaluation uses committed synthetic before/after cases and does not require
+  private sample text to be committed.
+- Failures point to concrete profile or rule gaps under
+  `codex/skills/write-as-me-ko/references/`.
 
 ## Deferred Work
 

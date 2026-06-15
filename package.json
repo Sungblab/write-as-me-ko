@@ -1,0 +1,7 @@
+{
+  "name": "write-as-me-ko",
+  "private": true,
+  "scripts": {
+    "docs:check": "python -m unittest discover -s tests -v && python -m scripts.run_eval"
+  }
+}

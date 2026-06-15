@@ -58,6 +58,8 @@ scripts/
   build_voice_profile.py
   export_agent_context.py
   install_codex.ps1
+  run_eval.py
+package.json
 ```
 
 할 수 있는 일:
@@ -91,9 +93,11 @@ codex/skills/write-as-me-ko/
 ## Verification
 
 ```powershell
+npm run docs:check
 python -m unittest discover -s tests -v
 .\scripts\smoke_profile.ps1
 python -m scripts.export_agent_context --output _workspace\AGENTS.write-as-me-ko.smoke.md
+python -m scripts.run_eval
 ```
 
 ## Non-goals
