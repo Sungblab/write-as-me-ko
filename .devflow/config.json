@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "gates": [
+    {
+      "id": "docs-check",
+      "command": "npm run docs:check"
+    }
+  ],
+  "review": {
+    "required": true
+  }
+}

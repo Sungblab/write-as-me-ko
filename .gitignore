@@ -2,7 +2,6 @@
 _workspace/
 outputs/
 dist/
-.devflow/
 
 # Local samples that may contain private writing
 samples/private/
@@ -18,3 +17,7 @@ Thumbs.db
 *.log
 __pycache__/
 *.pyc
+
+.devflow/state/
+.devflow/next-prompt.md
+plugins/devflow/
