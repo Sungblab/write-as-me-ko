@@ -1,0 +1,20 @@
+{
+  "name": "write-as-me-ko-local",
+  "interface": {
+    "displayName": "Write As Me KO Local"
+  },
+  "plugins": [
+    {
+      "name": "write-as-me-ko",
+      "source": {
+        "source": "local",
+        "path": "./plugins/write-as-me-ko"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

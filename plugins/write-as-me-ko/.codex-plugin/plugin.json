@@ -1,0 +1,25 @@
+{
+  "name": "write-as-me-ko",
+  "version": "0.1.0",
+  "description": "Korean writing AGENTS.md workflow for Codex and Claude Code.",
+  "author": {
+    "name": "Sungblab"
+  },
+  "license": "MIT",
+  "keywords": ["korean", "writing", "agents", "codex", "claude"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Write As Me KO",
+    "shortDescription": "Build and use a local Korean writing AGENTS.md from your samples.",
+    "longDescription": "Analyze local Korean blog, portfolio, message, report, and project samples with Python plus LLM interpretation, then generate a writing AGENTS.md and Codex skill references for future drafting.",
+    "developerName": "Sungblab",
+    "category": "Productivity",
+    "capabilities": ["Write"],
+    "defaultPrompt": [
+      "Use Write As Me KO to initialize my writing AGENTS.md.",
+      "Analyze my Korean blog samples and build a writing profile.",
+      "Draft this Korean text using my writing profile."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

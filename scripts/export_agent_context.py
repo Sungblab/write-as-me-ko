@@ -46,7 +46,7 @@ def build_manifest(voice_profile: str) -> str:
             f"- Confidence: {_extract_confidence(voice_profile)}",
             f"- Source routes: {source_routes}",
             f"- Included references: {included}",
-            "- Generated file: AGENTS.write-as-me-ko.md",
+            "- Generated file: writing/AGENTS.md",
             "- Raw samples included: no",
         ]
     )
@@ -58,9 +58,9 @@ def build_agent_context(repo_root: Path) -> str:
     body = "\n\n---\n\n".join(sections)
     return "\n".join(
         [
-            "# AGENTS.write-as-me-ko",
+            "# Writing AGENTS.md",
             "",
-            "Use this file as a portable Korean author context for AI agents.",
+            "Use this file as a portable Korean writing guide for AI agents.",
             "",
             "## Core Rules",
             "",
@@ -83,7 +83,7 @@ def build_agent_context(repo_root: Path) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Export a portable AGENTS context file.")
     parser.add_argument("--repo-root", default=".", help="Repository root")
-    parser.add_argument("--output", default="dist/AGENTS.write-as-me-ko.md", help="Output file")
+    parser.add_argument("--output", default="dist/writing/AGENTS.md", help="Output file")
     args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root)

@@ -40,22 +40,43 @@ Acceptance:
 - Private sample paths are called out as local-only material.
 - Existing profile builder tests cover route guidance and privacy notes.
 
-## Stage 3: Portable Agent Context Pack
+## Stage 3: Writing AGENTS.md Workflow
 
 Status: implemented.
 
 Scope:
 
 - Keep Codex as the first-class install target.
-- Export a single `AGENTS.write-as-me-ko.md` file for other agents.
+- Export a writing `AGENTS.md` file for other agents.
 - Include only distilled rules and profile references, never raw samples.
 - Add a manifest-like summary of confidence, source routes, and generated files.
+- Add an init helper that produces a Python baseline profile plus an LLM review
+  brief for Codex or Claude Code.
 
 Acceptance:
 
 - Export command works from a clean checkout.
 - Output is useful outside Codex without symlink-dependent references.
 - Tests prove missing reference files degrade with explicit "Missing" sections.
+- Init command writes profile, writing AGENTS output, and an LLM review brief.
+
+## Stage 3.5: Plugin Init Surface
+
+Status: implemented.
+
+Scope:
+
+- Add a local Codex plugin under `plugins/write-as-me-ko/`.
+- Provide an `init` command and skill that describe the agent-led setup flow.
+- Keep the workflow split into Python baseline analysis and LLM interpretation.
+
+Acceptance:
+
+- Plugin manifests exist under `plugins/write-as-me-ko/.codex-plugin/` and
+  `plugins/write-as-me-ko/.claude-plugin/`.
+- The local marketplace entry points to `./plugins/write-as-me-ko`.
+- The init skill tells the agent to run `scripts.init_writing_workspace`, review
+  samples conservatively, re-export `dist/writing/AGENTS.md`, and verify.
 
 ## Stage 4: Evaluation Loop
 
