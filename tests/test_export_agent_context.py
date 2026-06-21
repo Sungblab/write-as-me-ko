@@ -20,7 +20,7 @@ class ExportAgentContextTests(unittest.TestCase):
 
             context = build_agent_context(root)
 
-        self.assertIn("# AGENTS.write-as-me-ko", context)
+        self.assertIn("# Writing AGENTS.md", context)
         self.assertIn("Do not invent personal experiences", context)
         self.assertIn("Confidence: medium", context)
         self.assertIn("근거를 우선한다", context)
@@ -56,7 +56,7 @@ class ExportAgentContextTests(unittest.TestCase):
         self.assertIn("## Context Manifest", context)
         self.assertIn("- Confidence: medium", context)
         self.assertIn("- Source routes: blog, report", context)
-        self.assertIn("- Generated file: AGENTS.write-as-me-ko.md", context)
+        self.assertIn("- Generated file: writing/AGENTS.md", context)
 
     def test_build_agent_context_marks_missing_references_explicitly(self) -> None:
         with tempfile.TemporaryDirectory() as td:

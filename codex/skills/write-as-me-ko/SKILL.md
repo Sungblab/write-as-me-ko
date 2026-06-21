@@ -1,11 +1,11 @@
 ---
 name: write-as-me-ko
-description: Korean-first author voice skill. Use when the user asks to draft, rewrite, or polish Korean reports, essays, blog posts, messages, README copy, PR text, or submission notes in their own style. Reads local voice, judgment, format, and Korean AI-tell references before writing. Not for translation, factual research, or inventing personal experiences.
+description: Korean-first writing profile skill. Use when the user asks to draft, rewrite, or polish Korean reports, essays, blog posts, portfolio copy, messages, README copy, PR text, or submission notes in their own style. Reads local voice, judgment, format, and Korean AI-tell references before writing. Not for translation, factual research, or inventing personal experiences.
 ---
 
 # Write As Me KO
 
-Draft or rewrite Korean text using the user's local author context. This skill is not a generic humanizer. It applies the user's visible writing habits, judgment rules, and genre-specific format preferences before producing the first draft.
+Draft or rewrite Korean text using the user's local writing profile. This skill is not a generic humanizer. It applies the user's visible writing habits, judgment rules, and genre-specific format preferences before producing the first draft.
 
 ## Load Order
 
@@ -47,4 +47,3 @@ When local references are empty:
 - For drafting: produce a neutral, natural Korean draft and label it as "profile-light".
 - For voice matching: ask for samples before claiming voice match.
 - For sensitive submissions: keep claims conservative and explicitly mark assumptions.
-

@@ -1,0 +1,17 @@
+{
+  "name": "write-as-me-ko",
+  "description": "Korean writing AGENTS.md workflow for local sample analysis and drafting.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Sungblab"
+  },
+  "license": "MIT",
+  "keywords": [
+    "korean",
+    "writing",
+    "agents",
+    "profile",
+    "local-first"
+  ],
+  "skills": "./skills/"
+}

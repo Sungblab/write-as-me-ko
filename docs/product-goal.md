@@ -1,24 +1,28 @@
 # Product Goal
 
-`write-as-me-ko` is a Korean-first, local-first author context pack generator.
+`write-as-me-ko` is a Korean-first, local-first writing AGENTS.md workflow.
 
-The project helps a user turn their own Korean writing samples, judgment rules,
-and format preferences into reusable context for AI agents. The goal is not to
-make AI text bypass detectors or perfectly clone a person. The goal is to stop
-repeating the same style instructions and let agents write closer to the user's
-actual Korean habits from the first draft.
+The project helps a user work with Codex or Claude Code to analyze their Korean
+blog, portfolio, report, message, and project samples, then turn those findings
+into a reusable writing profile, Codex skill, and writing `AGENTS.md`. The goal
+is not to make AI text bypass detectors or perfectly clone a person. The goal is
+to stop repeating the same style instructions and make future drafting start
+from a reviewed local writing setup.
 
 ## Final Development Goal
 
 A complete version of `write-as-me-ko` should let the user:
 
-1. Put representative Korean samples under `samples/`.
-2. Build a reviewable author profile from those local samples.
-3. Edit the generated references before using them for sensitive writing.
-4. Install the Codex skill or export a portable agent context file.
-5. Use that context for Korean reports, essays, blog posts, messages, and
+1. Open the repo in Codex or Claude Code and request an init workflow.
+2. Provide representative Korean samples under `samples/` or an explicit local
+   sample path.
+3. Let the agent run Python baseline analysis for reproducible signals.
+4. Let the LLM interpret representative samples and strengthen the profile.
+5. Review generated references before using them for sensitive writing.
+6. Install the Codex skill or export a writing `AGENTS.md`.
+7. Use that writing setup for Korean reports, essays, blog posts, messages, and
    project documents.
-6. Keep private source samples out of git-tracked paths by default.
+8. Keep private source samples out of git-tracked paths by default.
 
 ## Positioning
 
@@ -29,9 +33,9 @@ bypass product, or a generic humanizer.
 `im-not-ai` starts after a draft exists and asks, "How do we remove Korean AI
 tells while preserving meaning?"
 
-`write-as-me-ko` starts before the draft and asks, "What local author context
-should an agent use so the first draft is already closer to the user's style,
-judgment, and target format?"
+`write-as-me-ko` starts before the draft and asks, "What local writing setup
+should Codex or Claude Code build so future drafts stay closer to the user's
+style, judgment, and target format?"
 
 ## Product Principles
 
@@ -40,8 +44,12 @@ judgment, and target format?"
   committed accidentally.
 - Korean-first: reports, essays, blog posts, messages, and project docs are the
   main target outputs.
-- Reviewable context: generated profiles are drafts for the user to inspect,
+- Agent-led setup: the user can ask Codex or Claude Code to run the init
+  workflow instead of manually executing every script.
+- Reviewable profile: generated profiles are drafts for the user to inspect,
   not hidden model state.
+- Python plus LLM: deterministic scripts provide baseline evidence, and the LLM
+  interprets supported writing habits.
 - Format before surface voice: reports should remain reports, messages should
   remain messages, and blog voice should not flatten every output.
 

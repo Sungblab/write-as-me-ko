@@ -1,7 +1,7 @@
 # Architecture
 
-`write-as-me-ko` is a local file workflow built around a Codex skill and a small
-set of standard-library Python scripts.
+`write-as-me-ko` is an agent-led local file workflow built around a Codex plugin,
+a Codex skill, and a small set of standard-library Python scripts.
 
 ## Data Flow
 
@@ -17,21 +17,37 @@ samples/
 scripts/build_voice_profile.py
       |
       v
+scripts/init_writing_workspace.py
+      |
+      +--> _workspace/writing-init/llm-review.md
+      |
+      v
 codex/skills/write-as-me-ko/references/voice-profile.md
       |
-      +--> Codex skill reads references during writing
+      +--> Codex/Claude Code performs LLM interpretation and profile review
       |
       v
 scripts/export_agent_context.py
       |
       v
-dist/AGENTS.write-as-me-ko.md
+dist/writing/AGENTS.md
 ```
 
 Raw samples are inputs only. They should not be copied into generated portable
 context files.
 
 ## Main Components
+
+### `plugins/write-as-me-ko/`
+
+The plugin is the agent-facing workflow surface. It provides:
+
+- `commands/init.md` for the init command shape.
+- `skills/init/SKILL.md` for the Python-plus-LLM setup workflow.
+- `skills/write/SKILL.md` for drafting from the generated profile.
+
+The plugin follows the same local plugin shape as `devflow-native`: Codex and
+Claude plugin manifests plus command and skill folders.
 
 ### `codex/skills/write-as-me-ko/SKILL.md`
 
@@ -72,10 +88,17 @@ The profile builder scans `.md` and `.txt` files under `samples/`, ignores repo
 guidance files, extracts conservative signals, and writes Markdown. It uses only
 the Python standard library so the project remains easy to run on Windows.
 
+### `scripts/init_writing_workspace.py`
+
+The init helper creates the baseline profile, exports the writing `AGENTS.md`,
+and writes `_workspace/writing-init/llm-review.md`. The review brief tells Codex
+or Claude Code what to inspect and how to strengthen the profile without copying
+private raw samples into tracked outputs.
+
 ### `scripts/export_agent_context.py`
 
-The exporter combines the core references into a portable agent context file.
-It should include distilled profile and rule content, not source samples.
+The exporter combines the core references into a writing `AGENTS.md`. It should
+include distilled profile and rule content, not source samples.
 
 ### `scripts/install_codex.ps1`
 
@@ -97,5 +120,6 @@ The baseline verification commands are:
 ```powershell
 python -m unittest discover -s tests -v
 .\scripts\smoke_profile.ps1
-python -m scripts.export_agent_context --output _workspace\AGENTS.write-as-me-ko.smoke.md
+python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
+python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md
 ```
