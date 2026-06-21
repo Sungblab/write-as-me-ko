@@ -42,6 +42,32 @@ $write-as-me-ko 이 메모를 교수님께 보낼 격식체 메시지로 정리�
 $write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.
 ```
 
+Codex나 Claude Code에게 설치와 사용 준비를 맡기고 싶다면 아래 프롬프트를 그대로 붙여넣습니다.
+
+```text
+이 저장소는 한국어 개인 문체 컨텍스트 팩 `write-as-me-ko`입니다.
+
+목표:
+- 내 로컬 샘플 글을 바탕으로 한국어 글쓰기용 author context를 설치하고, 바로 사용할 수 있게 준비해줘.
+- AI 탐지 우회나 완벽한 문체 복제를 목표로 하지 말고, 재사용 가능한 작성 기준과 말투 참고 컨텍스트를 만드는 데 집중해줘.
+
+해야 할 일:
+1. README와 docs를 먼저 읽고 현재 구현된 기능만 기준으로 진행해줘.
+2. `samples/` 아래에 실제 개인 글이 있으면 민감한 내용으로 취급하고, git에 새로 추가하지 마.
+3. 샘플이 있으면 다음 명령으로 voice profile 초안을 만들어줘.
+   `python -m scripts.build_voice_profile --samples samples --output codex\skills\write-as-me-ko\references\voice-profile.md`
+4. Codex 환경이면 다음 명령으로 skill을 설치해줘.
+   `.\scripts\install_codex.ps1 -Force`
+5. Claude Code나 일반 에이전트에서 쓸 컨텍스트가 필요하면 다음 명령으로 AGENTS 파일을 export해줘.
+   `python -m scripts.export_agent_context --output dist\AGENTS.write-as-me-ko.md`
+6. 마지막에 다음 검증을 실행하고 결과를 알려줘.
+   `npm run docs:check`
+
+사용 예시:
+- `$write-as-me-ko 이 메모를 교수님께 보낼 격식체 메시지로 정리해줘.`
+- `$write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.`
+```
+
 ## MVP Scope
 
 현재 버전은 Codex skill과 프로필 생성 스크립트를 제공합니다.
