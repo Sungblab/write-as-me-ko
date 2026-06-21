@@ -4,10 +4,11 @@
 
 The project helps a user work with Codex or Claude Code to analyze their Korean
 blog, portfolio, report, message, and project samples, then turn those findings
-into a reusable writing profile, Codex skill, and writing `AGENTS.md`. The goal
-is not to make AI text bypass detectors or perfectly clone a person. The goal is
-to stop repeating the same style instructions and make future drafting start
-from a reviewed local writing setup.
+into a reusable writing profile, Codex skill, and writing `AGENTS.md`. It also
+helps the user turn repeated writing situations into reusable writing skills.
+The goal is not to make AI text bypass detectors or perfectly clone a person.
+The goal is to stop repeating the same style and format instructions and make
+future drafting start from a reviewed local writing setup.
 
 ## Final Development Goal
 
@@ -20,9 +21,12 @@ A complete version of `write-as-me-ko` should let the user:
 4. Let the LLM interpret representative samples and strengthen the profile.
 5. Review generated references before using them for sensitive writing.
 6. Install the Codex skill or export a writing `AGENTS.md`.
-7. Use that writing setup for Korean reports, essays, blog posts, messages, and
+7. Create reusable writing skills for recurring situations such as threads,
+   social posts, professor messages, blog retrospectives, or any user-defined
+   format.
+8. Use that writing setup for Korean reports, essays, blog posts, messages, and
    project documents.
-8. Keep private source samples out of git-tracked paths by default.
+9. Keep private source samples out of git-tracked paths by default.
 
 ## Positioning
 
@@ -50,6 +54,8 @@ style, judgment, and target format?"
   not hidden model state.
 - Python plus LLM: deterministic scripts provide baseline evidence, and the LLM
   interprets supported writing habits.
+- Skill factory: repeated writing rules should become reusable skills instead
+  of being pasted into every chat.
 - Format before surface voice: reports should remain reports, messages should
   remain messages, and blog voice should not flatten every output.
 

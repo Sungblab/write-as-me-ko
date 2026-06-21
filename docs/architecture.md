@@ -43,7 +43,9 @@ context files.
 The plugin is the agent-facing workflow surface. It provides:
 
 - `commands/init.md` for the init command shape.
+- `commands/create-skill.md` for the writing skill factory command shape.
 - `skills/init/SKILL.md` for the Python-plus-LLM setup workflow.
+- `skills/create-skill/SKILL.md` for recurring writing situation skills.
 - `skills/write/SKILL.md` for drafting from the generated profile.
 
 The plugin follows the same local plugin shape as `devflow-native`: Codex and
@@ -94,6 +96,24 @@ The init helper creates the baseline profile, exports the writing `AGENTS.md`,
 and writes `_workspace/writing-init/llm-review.md`. The review brief tells Codex
 or Claude Code what to inspect and how to strengthen the profile without copying
 private raw samples into tracked outputs.
+
+### `scripts/create_writing_skill.py`
+
+The skill factory script creates reusable `SKILL.md` files from a preset or a
+custom writing situation. It handles deterministic name normalization,
+templating, overwrite protection, and synthetic examples. The LLM still owns the
+interpretation of user intent and sample-specific writing rules.
+
+### `templates/writing-skill/SKILL.md`
+
+The template is the common skeleton for generated writing skills. It keeps the
+generated skills compatible with Codex and Claude Code's `SKILL.md` style.
+
+### `examples/writing-skills/`
+
+Examples show starter skills for thread posts, Facebook posts, LinkedIn posts,
+Instagram stories, professor messages, and blog retrospectives. They are
+synthetic examples, not copied third-party posts.
 
 ### `scripts/export_agent_context.py`
 

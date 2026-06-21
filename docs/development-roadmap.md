@@ -97,6 +97,30 @@ Acceptance:
 - Failures point to concrete profile or rule gaps under
   `codex/skills/write-as-me-ko/references/`.
 
+## Stage 5: Writing Skill Factory
+
+Status: implemented.
+
+Scope:
+
+- Add `scripts/create_writing_skill.py`.
+- Add `templates/writing-skill/SKILL.md`.
+- Add `plugins/write-as-me-ko/skills/create-skill/SKILL.md`.
+- Add `plugins/write-as-me-ko/commands/create-skill.md`.
+- Include synthetic starter examples for thread, Facebook, LinkedIn, Instagram
+  story, professor message, and blog retrospective writing.
+- Keep the system open-ended so users can create skills for any recurring
+  writing situation.
+
+Acceptance:
+
+- Presets generate valid `SKILL.md` files.
+- Custom skills can be generated without overwriting existing files unless
+  `--force` is passed.
+- Generated examples do not copy third-party posts or claim official platform
+  algorithm optimization.
+- `npm run docs:check` covers the factory script.
+
 ## Deferred Work
 
 - Web UI.

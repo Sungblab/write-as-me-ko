@@ -17,6 +17,8 @@
     "capabilities": ["Write"],
     "defaultPrompt": [
       "Use Write As Me KO to initialize my writing AGENTS.md.",
+      "Create a reusable writing skill for my Threads posts.",
+      "Make a custom writing skill from these repeated rules.",
       "Analyze my Korean blog samples and build a writing profile.",
       "Draft this Korean text using my writing profile."
     ],

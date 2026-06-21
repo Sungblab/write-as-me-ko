@@ -17,6 +17,7 @@
 - Python으로 샘플 개수, 문장 길이, 자주 보이는 표현, route별 신호를 먼저 뽑습니다.
 - LLM이 실제 샘플과 Python 결과를 함께 보고 말투/판단 패턴을 보강합니다.
 - 이후 글 작성에 쓸 `voice-profile.md`, Codex skill, 글쓰기용 `AGENTS.md`를 만듭니다.
+- 반복해서 쓰는 글쓰기 상황을 별도 `SKILL.md`로 만들 수 있습니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 
@@ -69,6 +70,32 @@ python -m scripts.export_agent_context --output dist\writing\AGENTS.md
 ```text
 $write-as-me-ko 이 메모를 교수님께 보낼 격식체 메시지로 정리해줘.
 $write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.
+```
+
+## Writing Skill Factory
+
+말투 프로필만으로는 부족할 때가 있습니다. 쓰레드 글, 페이스북 글, 링크드인 글,
+인스타그램 스토리, 교수님 메시지, 블로그 회고처럼 반복해서 쓰는 글은 각자 다른
+규칙을 갖습니다.
+
+이럴 때는 상황별 글쓰기 스킬을 만듭니다.
+
+```text
+쓰레드 글쓰기 스킬 만들어줘.
+한 시리즈당 500자 이하, 보통 5개, 첫 글은 문제의식 중심,
+너무 홍보문처럼 쓰지 말고 내 블로그 말투를 참고해.
+```
+
+에이전트는 사용자의 요구를 purpose, audience, constraints, tone, examples,
+checklist로 정리한 뒤 `SKILL.md`를 생성합니다. 종류를 Threads/Facebook/LinkedIn
+같은 고정 목록으로 제한하지 않습니다. 예시는 starter일 뿐이고, 사용자가 반복해서
+쓰는 어떤 글쓰기 상황이든 스킬로 만들 수 있습니다.
+
+직접 생성해야 할 때는 아래 명령을 쓸 수 있습니다.
+
+```powershell
+python -m scripts.create_writing_skill --list-presets
+python -m scripts.create_writing_skill --preset thread-post --output-root dist\writing-skills --force
 ```
 
 ## Init Workflow
@@ -147,6 +174,7 @@ eval/
 samples/
   README.md
 scripts/
+  create_writing_skill.py
   build_voice_profile.py
   export_agent_context.py
   init_writing_workspace.py
@@ -155,9 +183,14 @@ scripts/
 plugins/write-as-me-ko/
   .codex-plugin/plugin.json
   .claude-plugin/plugin.json
+  commands/create-skill.md
   commands/init.md
+  skills/create-skill/SKILL.md
   skills/init/SKILL.md
   skills/write/SKILL.md
+templates/writing-skill/
+  SKILL.md
+examples/writing-skills/
 tests/
 package.json
 ```
@@ -201,6 +234,8 @@ python -m scripts.run_eval
 - [Product goal](docs/product-goal.md)
 - [Development roadmap](docs/development-roadmap.md)
 - [Architecture](docs/architecture.md)
+- [Writing skill factory](docs/writing-skill-factory.md)
+- [Follow-up thread draft](docs/launch-followup-thread.md)
 
 ## Non-Goals
 
