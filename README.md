@@ -1,20 +1,35 @@
 # write-as-me-ko
 
-한국어 사용자를 위한 로컬-first 개인 문체 컨텍스트 팩입니다.
+한국어 글 샘플을 로컬에서 분석해 AI 에이전트가 참고할 author context를
+만드는 작은 도구입니다.
 
-이 프로젝트는 [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai)의 한국어 AI 문체 탐지/윤문 접근에서 영감을 받았습니다. `im-not-ai`가 이미 생성된 글의 AI 티를 줄이는 후처리 도구에 가깝다면, `write-as-me-ko`는 사용자의 글 샘플, 판단 기준, 산출물 형식을 에이전트가 처음부터 참고하도록 만드는 것을 목표로 합니다.
+[`im-not-ai`](https://github.com/epoko77-ai/im-not-ai)가 이미 나온 초안의 한국어 AI 티를 줄이는 후처리 도구에 가깝다면,
+`write-as-me-ko`는 초안을 쓰기 전에 "나는 어떤 기준과 형식으로 쓰는가"를
+에이전트에게 먼저 알려주는 쪽에 가깝습니다.
 
-목표는 AI 글을 사람 글처럼 속이는 것이 아닙니다. 매번 같은 말투 설명을 반복하지 않아도 보고서, 에세이, 블로그, 메시지, 프로젝트 문서가 사용자의 실제 한국어 습관에 더 가까워지게 만드는 것입니다.
+목표는 AI detector 우회나 완벽한 문체 복제가 아닙니다. 매번 "내 스타일로",
+"너무 AI처럼 쓰지 말고", "보고서 톤으로", "교수님께 보내는 말투로"를 반복하지
+않게 만드는 재사용 가능한 한국어 작성 컨텍스트가 핵심입니다.
+
+## What It Does
+
+- `samples/` 아래의 한국어 `.md`, `.txt` 샘플을 읽습니다.
+- blog, report, message, project 같은 글의 route를 나눠 봅니다.
+- 자주 보이는 표현, 문장 길이, route별 작성 신호를 `voice-profile.md`로 정리합니다.
+- Codex skill 또는 일반 에이전트용 `AGENTS.write-as-me-ko.md`로 사용할 수 있게 합니다.
+- 원문 샘플을 portable context에 복사하지 않고, 요약된 규칙과 프로필만 export합니다.
+- synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 
 ## Quickstart
 
-샘플 글을 넣습니다.
+샘플 글을 route별로 넣습니다.
 
 ```text
 samples/
   blog/
   report/
   message/
+  project/
 ```
 
 프로필 초안을 생성합니다.
@@ -23,26 +38,48 @@ samples/
 python -m scripts.build_voice_profile --samples samples --output codex\skills\write-as-me-ko\references\voice-profile.md
 ```
 
+생성된 `voice-profile.md`를 읽고 필요한 부분을 직접 고칩니다. 실제 샘플이 적으면
+프로필은 보수적으로 동작해야 합니다.
+
 Codex skill로 설치합니다.
 
 ```powershell
 .\scripts\install_codex.ps1 -Force
 ```
 
-일반 에이전트용 컨텍스트 파일이 필요하면 export 합니다.
-
-```powershell
-python -m scripts.export_agent_context --output dist\AGENTS.write-as-me-ko.md
-```
-
-이후 Codex에서 다음처럼 사용합니다.
+Codex에서 사용합니다.
 
 ```text
 $write-as-me-ko 이 메모를 교수님께 보낼 격식체 메시지로 정리해줘.
 $write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.
 ```
 
-Codex나 Claude Code에게 설치와 사용 준비를 맡기고 싶다면 아래 프롬프트를 그대로 붙여넣습니다.
+다른 에이전트에서 쓸 단일 컨텍스트 파일이 필요하면 export합니다.
+
+```powershell
+python -m scripts.export_agent_context --output dist\AGENTS.write-as-me-ko.md
+```
+
+## How It Works
+
+```text
+local samples
+  -> scripts/build_voice_profile.py
+  -> codex/skills/write-as-me-ko/references/voice-profile.md
+  -> Codex skill or exported AGENTS.write-as-me-ko.md
+```
+
+핵심 reference는 네 가지입니다.
+
+- `voice-profile.md`: 샘플에서 뽑은 문체, route, confidence, privacy note
+- `judgment-rules.md`: 근거 없는 주장, 과장, 허위 경험을 막는 판단 규칙
+- `format-routes.md`: 보고서, 블로그, 메시지, 프로젝트 문서별 작성 형식
+- `anti-ai-tells-ko.md`: 번역투, 기계적 구조, 반복 결말 같은 한국어 AI 티 점검표
+
+## Agent Setup Prompt
+
+Codex나 Claude Code에게 설치와 사용 준비를 맡기고 싶다면 아래 프롬프트를 그대로
+붙여넣습니다.
 
 ```text
 이 저장소는 한국어 개인 문체 컨텍스트 팩 `write-as-me-ko`입니다.
@@ -68,9 +105,7 @@ Codex나 Claude Code에게 설치와 사용 준비를 맡기고 싶다면 아래
 - `$write-as-me-ko 이 초안을 내 블로그 글 톤으로 다듬어줘.`
 ```
 
-## MVP Scope
-
-현재 버전은 Codex skill과 프로필 생성 스크립트를 제공합니다.
+## Repository Layout
 
 ```text
 codex/skills/write-as-me-ko/
@@ -80,41 +115,36 @@ codex/skills/write-as-me-ko/
     format-routes.md
     judgment-rules.md
     voice-profile.md
+eval/
+  before-after.md
+  test-prompts.md
+samples/
+  README.md
 scripts/
   build_voice_profile.py
   export_agent_context.py
   install_codex.ps1
   run_eval.py
+tests/
 package.json
 ```
 
-할 수 있는 일:
+## Evaluation
 
-- 한국어 보고서, 에세이, 블로그, 메시지 초안 작성
-- 일반적인 AI 초안을 로컬 voice profile 기준으로 재작성
-- 격식체는 격식체로, 구어체는 구어체로 유지
-- 번역투, 기계적 전환, 과장된 주장, 반복적인 결말 같은 한국어 AI 티 점검
+Stage 4 평가는 private sample을 읽지 않습니다. `eval/before-after.md`에 들어 있는
+committed synthetic case를 기준으로 네 가지를 점검합니다.
 
-## Repository Layout
+- 사실 보존
+- 장르 유지
+- 한국어 자연스러움
+- 프로필 신호 반영
 
-```text
-samples/
-  blog/       # user's blog or reflective writing samples
-  report/     # reports, essays, assignment-style writing
-  message/    # emails, team messages, professor-facing notes
-eval/
-  test-prompts.md
-  before-after.md
-codex/skills/write-as-me-ko/
+```powershell
+python -m scripts.run_eval
 ```
 
-실제 샘플을 `samples/` 아래에 넣고 `scripts.build_voice_profile`을 실행하면 `codex/skills/write-as-me-ko/references/voice-profile.md` 초안이 갱신됩니다. 생성된 프로필은 그대로 믿기보다 한 번 읽고 수정하는 것을 전제로 합니다.
-
-## Project Docs
-
-- [Product goal](docs/product-goal.md)
-- [Development roadmap](docs/development-roadmap.md)
-- [Architecture](docs/architecture.md)
+결과는 `_workspace/eval/evaluation-report.md`에 생성됩니다. `_workspace/`는 git에
+올라가지 않습니다.
 
 ## Verification
 
@@ -126,9 +156,22 @@ python -m scripts.export_agent_context --output _workspace\AGENTS.write-as-me-ko
 python -m scripts.run_eval
 ```
 
-## Non-goals
+## Privacy
+
+- `samples/private/`와 `*.local.md`는 gitignore 대상입니다.
+- 실제 개인 글은 로컬 입력으로만 쓰고, export된 agent context에는 원문을 넣지 않습니다.
+- 생성된 `voice-profile.md`는 자동 정답이 아니라 사용자가 검토하고 수정할 초안입니다.
+
+## Project Docs
+
+- [Product goal](docs/product-goal.md)
+- [Development roadmap](docs/development-roadmap.md)
+- [Architecture](docs/architecture.md)
+
+## Non-Goals
 
 - No fake personal experience generation
 - No plagiarism or author impersonation
 - No AI-detector bypass guarantee
 - No promise that one profile fits every genre
+- No hosted storage requirement for private samples
