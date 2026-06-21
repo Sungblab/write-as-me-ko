@@ -79,7 +79,7 @@ local samples
 ## Agent Setup Prompt
 
 Codex나 Claude Code에게 설치와 사용 준비를 맡기고 싶다면 아래 프롬프트를 그대로
-붙여넣습니다.
+붙여넣으시면 됩니다.
 
 ```text
 이 저장소는 한국어 개인 문체 컨텍스트 팩 `write-as-me-ko`입니다.
