@@ -165,6 +165,28 @@ Acceptance:
 - Tests prove profile packs include style features without raw sample text.
 - `npm run docs:check` covers the updated profile pack behavior.
 
+## Stage 8: Contest Hardening Pack
+
+Status: implemented.
+
+Scope:
+
+- Add `write_as_me/privacy_scanner.py`.
+- Detect email, phone, resident-id-like, student-id-like, token-like, and URL
+  patterns without storing raw values.
+- Embed privacy finding counts, risk, kind counts, and path counts in
+  `profile.json`.
+- Surface privacy findings in `privacy-report.md` and `eval`.
+- Add `write_as_me/demo_report.py`.
+- Add `python -m write_as_me.cli demo report` for judge-readable demo reports.
+
+Acceptance:
+
+- Tests prove sensitive values are not copied into scanner output or privacy reports.
+- Tests prove profile eval warns when privacy findings exist.
+- Tests prove demo reports include profile/style/privacy evidence without raw sample text.
+- `npm run docs:check` covers the demo report command.
+
 ## Deferred Work
 
 - Web UI.
@@ -172,5 +194,5 @@ Acceptance:
 - Detector-style scoring claims.
 - Multi-language expansion.
 - Automatic voice cloning or personality simulation.
-- PII pattern scanner for phone numbers, email addresses, student ids, and
-  token-like strings.
+- Morphology-aware Korean tokenization.
+- Interactive web demo.

@@ -22,6 +22,9 @@
   portable `AGENTS.md`를 생성하고 검증할 수 있습니다.
 - 한국어 문장 길이, 종결어미, 접속어, 1인칭 표현, 입장 표현, 구조, 문자 n-gram
   같은 deterministic style signal을 profile pack에 포함합니다.
+- 이메일, 전화번호, 주민등록번호 형태, 학번, token-like 문자열, URL 같은 민감 패턴을
+  redacted metadata로 감지해 privacy report와 eval에 반영합니다.
+- 심사용 demo report를 생성해 generic agent와 profile-aware agent의 차이를 한 화면에 정리합니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 
@@ -76,6 +79,7 @@ npm run profile:build
 npm run profile:doctor
 npm run profile:eval
 npm run profile:export
+npm run profile:demo
 ```
 
 개별 명령은 `python -m write_as_me.cli`로도 실행할 수 있습니다.
@@ -85,6 +89,7 @@ python -m write_as_me.cli profile build --samples examples\profile-pack-samples 
 python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli export agents --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\AGENTS.md --json
+python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 ```
 
 이후 글을 쓸 때는 생성된 글쓰기용 `AGENTS.md`나 Codex skill을 참고합니다.
@@ -204,7 +209,10 @@ scripts/
   run_eval.py
 write_as_me/
   cli.py
+  demo_report.py
   profile_pack.py
+  privacy_scanner.py
+  style_signals.py
 examples/profile-pack-samples/
 docs/profile-pack-v2.md
 plugins/write-as-me-ko/
@@ -247,6 +255,7 @@ python -m unittest discover -s tests -v
 python -m write_as_me.cli profile build --samples examples\profile-pack-samples --output _workspace\profile-pack-demo --json
 python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md
@@ -257,6 +266,7 @@ python -m scripts.run_eval
 
 - `samples/private/`와 `*.local.md`는 gitignore 대상입니다.
 - 실제 개인 글은 로컬 입력으로만 쓰고, export된 글쓰기용 `AGENTS.md`에는 원문을 넣지 않습니다.
+- privacy scanner는 민감 패턴의 원문 값을 저장하지 않고 kind/count/redacted metadata만 남깁니다.
 - 생성된 `voice-profile.md`는 자동 정답이 아니라 사용자가 검토하고 수정할 초안입니다.
 
 ## Project Docs
