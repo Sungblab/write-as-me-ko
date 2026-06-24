@@ -1,7 +1,8 @@
 # Architecture
 
 `write-as-me-ko` is an agent-led local file workflow built around a Codex plugin,
-a Codex skill, and a small set of standard-library Python scripts.
+a Codex skill, a Profile Pack v2 CLI, and a small set of standard-library Python
+modules.
 
 ## Data Flow
 
@@ -31,6 +32,28 @@ scripts/export_agent_context.py
       |
       v
 dist/writing/AGENTS.md
+```
+
+Profile Pack v2 adds a machine-readable path:
+
+```text
+samples/ or examples/profile-pack-samples/
+      |
+      v
+write_as_me/profile_pack.py
+      |
+      +--> profile.json
+      +--> sample-manifest.json
+      +--> voice-profile.md
+      +--> route-map.md
+      +--> privacy-report.md
+      +--> coverage-report.md
+      |
+      v
+write_as_me/cli.py
+      |
+      +--> doctor / eval
+      +--> portable AGENTS.md export
 ```
 
 Raw samples are inputs only. They should not be copied into generated portable
@@ -90,6 +113,19 @@ The profile builder scans `.md` and `.txt` files under `samples/`, ignores repo
 guidance files, extracts conservative signals, and writes Markdown. It uses only
 the Python standard library so the project remains easy to run on Windows.
 
+### `write_as_me/profile_pack.py`
+
+The Profile Pack v2 builder writes a portable, machine-readable pack for future
+agent workflows. It includes hashes, route counts, confidence, coverage, and
+privacy metadata, but does not export raw sample text.
+
+### `write_as_me/cli.py`
+
+The CLI exposes `profile build`, `doctor`, `eval`, and `export agents`.
+`doctor` validates the profile pack shape and raw-sample boundary. `eval` checks
+whether the pack is strong enough for reuse. `export agents` writes a portable
+`AGENTS.md` from the pack reports.
+
 ### `scripts/init_writing_workspace.py`
 
 The init helper creates the baseline profile, exports the writing `AGENTS.md`,
@@ -139,6 +175,9 @@ The baseline verification commands are:
 
 ```powershell
 python -m unittest discover -s tests -v
+python -m write_as_me.cli profile build --samples examples\profile-pack-samples --output _workspace\profile-pack-demo --json
+python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md

@@ -18,6 +18,8 @@
 - LLM이 실제 샘플과 Python 결과를 함께 보고 말투/판단 패턴을 보강합니다.
 - 이후 글 작성에 쓸 `voice-profile.md`, Codex skill, 글쓰기용 `AGENTS.md`를 만듭니다.
 - 반복해서 쓰는 글쓰기 상황을 별도 `SKILL.md`로 만들 수 있습니다.
+- Profile Pack v2 CLI로 `profile.json`, `sample-manifest.json`, coverage/privacy report,
+  portable `AGENTS.md`를 생성하고 검증할 수 있습니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 
@@ -63,6 +65,24 @@ samples or local writing path
 python -m scripts.init_writing_workspace --samples samples --repo-root .
 .\scripts\install_codex.ps1 -Force
 python -m scripts.export_agent_context --output dist\writing\AGENTS.md
+```
+
+Profile Pack v2를 직접 만들고 검증하려면 아래 demo workflow를 실행합니다.
+
+```powershell
+npm run profile:build
+npm run profile:doctor
+npm run profile:eval
+npm run profile:export
+```
+
+개별 명령은 `python -m write_as_me.cli`로도 실행할 수 있습니다.
+
+```powershell
+python -m write_as_me.cli profile build --samples examples\profile-pack-samples --output _workspace\profile-pack-demo --json
+python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli export agents --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\AGENTS.md --json
 ```
 
 이후 글을 쓸 때는 생성된 글쓰기용 `AGENTS.md`나 Codex skill을 참고합니다.
@@ -180,6 +200,11 @@ scripts/
   init_writing_workspace.py
   install_codex.ps1
   run_eval.py
+write_as_me/
+  cli.py
+  profile_pack.py
+examples/profile-pack-samples/
+docs/profile-pack-v2.md
 plugins/write-as-me-ko/
   .codex-plugin/plugin.json
   .claude-plugin/plugin.json
@@ -217,6 +242,9 @@ python -m scripts.run_eval
 ```powershell
 npm run docs:check
 python -m unittest discover -s tests -v
+python -m write_as_me.cli profile build --samples examples\profile-pack-samples --output _workspace\profile-pack-demo --json
+python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md
@@ -234,6 +262,7 @@ python -m scripts.run_eval
 - [Product goal](docs/product-goal.md)
 - [Development roadmap](docs/development-roadmap.md)
 - [Architecture](docs/architecture.md)
+- [Profile Pack v2](docs/profile-pack-v2.md)
 - [Writing skill factory](docs/writing-skill-factory.md)
 - [Follow-up thread draft](docs/launch-followup-thread.md)
 

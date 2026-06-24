@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "write-as-me-ko"
+version = "0.2.0"
+description = "Korean author-context profile pack and agent skill factory."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Sungbin" }
+]
+dependencies = []
+
+[project.scripts]
+write-as-me = "write_as_me.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["write_as_me*"]

@@ -6,6 +6,8 @@ The project helps a user work with Codex or Claude Code to analyze their Korean
 blog, portfolio, report, message, and project samples, then turn those findings
 into a reusable writing profile, Codex skill, and writing `AGENTS.md`. It also
 helps the user turn repeated writing situations into reusable writing skills.
+Profile Pack v2 adds a CLI path for building a machine-readable local profile
+pack with coverage, privacy, doctor, eval, and portable agent export surfaces.
 The goal is not to make AI text bypass detectors or perfectly clone a person.
 The goal is to stop repeating the same style and format instructions and make
 future drafting start from a reviewed local writing setup.
@@ -24,9 +26,10 @@ A complete version of `write-as-me-ko` should let the user:
 7. Create reusable writing skills for recurring situations such as threads,
    social posts, professor messages, blog retrospectives, or any user-defined
    format.
-8. Use that writing setup for Korean reports, essays, blog posts, messages, and
+8. Build and validate a Profile Pack v2 artifact for repeatable agent setup.
+9. Use that writing setup for Korean reports, essays, blog posts, messages, and
    project documents.
-9. Keep private source samples out of git-tracked paths by default.
+10. Keep private source samples out of git-tracked paths by default.
 
 ## Positioning
 
@@ -52,6 +55,8 @@ style, judgment, and target format?"
   workflow instead of manually executing every script.
 - Reviewable profile: generated profiles are drafts for the user to inspect,
   not hidden model state.
+- Machine-readable pack: profile outputs should be inspectable by tests,
+  scripts, and future agent integrations.
 - Python plus LLM: deterministic scripts provide baseline evidence, and the LLM
   interprets supported writing habits.
 - Skill factory: repeated writing rules should become reusable skills instead
