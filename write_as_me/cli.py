@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .demo_report import write_demo_report
 from .profile_pack import build_profile_pack
 
 
@@ -84,6 +85,8 @@ def _eval_payload(profile_pack: Path) -> dict[str, Any]:
     summary = profile.get("summary", {})
     confidence = summary.get("confidence", "none")
     route_count = len(profile.get("routes", {}))
+    privacy = profile.get("privacy", {})
+    style_features = profile.get("style_features", {})
     checks = [
         {
             "id": "confidence",
@@ -98,6 +101,19 @@ def _eval_payload(profile_pack: Path) -> dict[str, Any]:
         {
             "id": "raw-samples",
             "status": "pass" if profile.get("raw_samples_included") is False else "fail",
+        },
+        {
+            "id": "style-signals",
+            "status": "pass" if len(style_features.get("signal_groups", [])) >= 3 else "warn",
+            "value": style_features.get("signal_groups", []),
+        },
+        {
+            "id": "privacy-scan",
+            "status": "pass" if privacy.get("finding_count", 0) == 0 else "warn",
+            "value": {
+                "risk": privacy.get("risk", "none"),
+                "finding_count": privacy.get("finding_count", 0),
+            },
         },
     ]
     if any(check["status"] == "fail" for check in checks):
@@ -216,6 +232,20 @@ def _handle_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_demo_report(args: argparse.Namespace) -> int:
+    output = write_demo_report(Path(args.profile_pack), Path(args.output))
+    payload = {
+        "status": "written",
+        "profile_pack": str(args.profile_pack),
+        "output": str(output),
+    }
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"wrote {output}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build Korean author-context profile packs.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -245,6 +275,14 @@ def build_parser() -> argparse.ArgumentParser:
     agents.add_argument("--output", default="dist/writing/AGENTS.md", help="Output AGENTS.md path")
     agents.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     agents.set_defaults(func=_handle_export)
+
+    demo = subparsers.add_parser("demo", help="Demo and contest report commands")
+    demo_subparsers = demo.add_subparsers(dest="demo_command", required=True)
+    report = demo_subparsers.add_parser("report", help="Write a judge-readable demo report")
+    report.add_argument("--profile-pack", default="dist/profile-pack", help="Profile pack directory")
+    report.add_argument("--output", default="dist/demo-report.md", help="Output report path")
+    report.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    report.set_defaults(func=_handle_demo_report)
 
     return parser
 

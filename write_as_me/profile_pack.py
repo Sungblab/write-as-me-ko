@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .privacy_scanner import scan_samples
 from .style_signals import analyze_style_signals
 
 
@@ -123,6 +124,7 @@ def _profile_json(samples: list[PackSample]) -> dict[str, Any]:
     routes = _route_counts(samples)
     total_chars = len(all_text)
     style_features = analyze_style_signals(all_text)
+    privacy_scan = scan_samples(samples)
     return {
         "schema_version": 2,
         "product": "write-as-me-ko",
@@ -148,6 +150,10 @@ def _profile_json(samples: list[PackSample]) -> dict[str, Any]:
         "privacy": {
             "private_sample_count": len(_private_sample_paths(samples)),
             "raw_sample_text_exported": False,
+            "risk": privacy_scan["risk"],
+            "finding_count": privacy_scan["finding_count"],
+            "kind_counts": privacy_scan["kind_counts"],
+            "path_counts": privacy_scan["path_counts"],
         },
     }
 
@@ -213,13 +219,16 @@ def _route_map_markdown(samples: list[PackSample]) -> str:
     return "\n".join(lines)
 
 
-def _privacy_report_markdown(samples: list[PackSample]) -> str:
+def _privacy_report_markdown(samples: list[PackSample], profile: dict[str, Any]) -> str:
     private_paths = _private_sample_paths(samples)
+    privacy = profile.get("privacy", {})
     lines = [
         "# Privacy Report",
         "",
         "- Raw sample text included: no",
         "- Hashes and character counts are included for reproducible local checks.",
+        f"- Privacy risk: {privacy.get('risk', 'none')}",
+        f"- Privacy findings: {privacy.get('finding_count', 0)}",
         "",
         "## Private Samples",
         "",
@@ -229,6 +238,13 @@ def _privacy_report_markdown(samples: list[PackSample]) -> str:
         lines.extend(f"  - `{path}`" for path in private_paths)
     else:
         lines.append("- No `private/` or `*.local.md` samples were detected.")
+    lines.extend(["", "## Privacy Findings", ""])
+    kind_counts = privacy.get("kind_counts", {})
+    if kind_counts:
+        lines.extend(f"- {kind}: {count}" for kind, count in sorted(kind_counts.items()))
+        lines.append("- Values are redacted and are not copied into this report.")
+    else:
+        lines.append("- No email, phone, student id, resident id, token-like, or URL patterns detected.")
     lines.extend(["", "## Rule", "", "- Do not commit raw personal samples or generated exports containing raw sample text.", ""])
     return "\n".join(lines)
 
@@ -284,7 +300,7 @@ def build_profile_pack(samples_root: Path, output_dir: Path) -> ProfilePackResul
     _write_json(manifest_path, manifest)
     voice_profile_path.write_text(_voice_profile_markdown(profile), encoding="utf-8")
     route_map_path.write_text(_route_map_markdown(samples), encoding="utf-8")
-    privacy_report_path.write_text(_privacy_report_markdown(samples), encoding="utf-8")
+    privacy_report_path.write_text(_privacy_report_markdown(samples, profile), encoding="utf-8")
     coverage_report_path.write_text(_coverage_report_markdown(profile), encoding="utf-8")
 
     return ProfilePackResult(

@@ -55,6 +55,7 @@ write_as_me/cli.py
       |
       +--> doctor / eval
       +--> portable AGENTS.md export
+      +--> judge-readable demo report
 ```
 
 Raw samples are inputs only. They should not be copied into generated portable
@@ -129,12 +130,28 @@ length, Korean endings, connectors, first-person markers, stance markers, bullet
 structure, English-character ratio, and character n-grams. These are aggregate
 features only; raw sample text is not written to the profile pack.
 
+### `write_as_me/privacy_scanner.py`
+
+The privacy scanner detects common sensitive patterns in local samples: email
+addresses, Korean mobile phone numbers, resident-id-like strings,
+student-id-like strings, token-like strings, and URLs. Reports store only
+finding kind, risk, source path, span, and a redacted representation.
+
+### `write_as_me/demo_report.py`
+
+The demo report builder writes a judge-readable Markdown report from profile
+pack metadata. It summarizes style evidence, privacy risk, route coverage, and
+how a profile-aware agent should differ from a generic agent without including
+raw sample text.
+
 ### `write_as_me/cli.py`
 
-The CLI exposes `profile build`, `doctor`, `eval`, and `export agents`.
+The CLI exposes `profile build`, `doctor`, `eval`, `export agents`, and
+`demo report`.
 `doctor` validates the profile pack shape and raw-sample boundary. `eval` checks
 whether the pack is strong enough for reuse. `export agents` writes a portable
-`AGENTS.md` from the pack reports.
+`AGENTS.md` from the pack reports. `demo report` writes a contest-friendly
+summary report.
 
 ### `scripts/init_writing_workspace.py`
 
@@ -188,6 +205,7 @@ python -m unittest discover -s tests -v
 python -m write_as_me.cli profile build --samples examples\profile-pack-samples --output _workspace\profile-pack-demo --json
 python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
+python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md

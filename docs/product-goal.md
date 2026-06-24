@@ -10,6 +10,8 @@ Profile Pack v2 adds a CLI path for building a machine-readable local profile
 pack with coverage, privacy, doctor, eval, and portable agent export surfaces.
 The profile pack should be grounded in deterministic Korean style signals before
 LLM interpretation turns those signals into reusable writing guidance.
+Contest-facing outputs should also include a privacy scan and a demo report so
+reviewers can see the tool's safety and behavior without reading private samples.
 The goal is not to make AI text bypass detectors or perfectly clone a person.
 The goal is to stop repeating the same style and format instructions and make
 future drafting start from a reviewed local writing setup.
@@ -61,6 +63,8 @@ style, judgment, and target format?"
   scripts, and future agent integrations.
 - Deterministic first: measurable local style signals come before LLM
   interpretation.
+- Privacy visible: generated reports should show whether local samples contain
+  sensitive patterns without revealing those values.
 - Python plus LLM: deterministic scripts provide baseline evidence, and the LLM
   interprets supported writing habits.
 - Skill factory: repeated writing rules should become reusable skills instead
