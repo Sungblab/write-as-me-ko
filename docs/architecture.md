@@ -48,6 +48,7 @@ write_as_me/profile_pack.py
       +--> route-map.md
       +--> privacy-report.md
       +--> coverage-report.md
+      +--> style_features / route_style_features
       |
       v
 write_as_me/cli.py
@@ -117,7 +118,16 @@ the Python standard library so the project remains easy to run on Windows.
 
 The Profile Pack v2 builder writes a portable, machine-readable pack for future
 agent workflows. It includes hashes, route counts, confidence, coverage, and
-privacy metadata, but does not export raw sample text.
+privacy metadata, but does not export raw sample text. It also embeds
+deterministic Korean style signals so future agent skills can use measurable
+evidence rather than only LLM impressions.
+
+### `write_as_me/style_signals.py`
+
+The style signal analyzer extracts local, deterministic markers: sentence
+length, Korean endings, connectors, first-person markers, stance markers, bullet
+structure, English-character ratio, and character n-grams. These are aggregate
+features only; raw sample text is not written to the profile pack.
 
 ### `write_as_me/cli.py`
 

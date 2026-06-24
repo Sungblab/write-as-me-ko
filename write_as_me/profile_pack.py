@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .style_signals import analyze_style_signals
+
 
 SUPPORTED_EXTENSIONS = {".md", ".txt"}
 ROUTE_ORDER = ("blog", "report", "message", "project", "other")
@@ -120,6 +122,7 @@ def _profile_json(samples: list[PackSample]) -> dict[str, Any]:
     sentences = _split_sentences(all_text)
     routes = _route_counts(samples)
     total_chars = len(all_text)
+    style_features = analyze_style_signals(all_text)
     return {
         "schema_version": 2,
         "product": "write-as-me-ko",
@@ -137,6 +140,11 @@ def _profile_json(samples: list[PackSample]) -> dict[str, Any]:
             "confidence": _confidence(len(samples), total_chars, len(routes)),
         },
         "routes": routes,
+        "style_features": style_features,
+        "route_style_features": {
+            route: analyze_style_signals("\n\n".join(sample.text for sample in samples if sample.route == route))
+            for route in routes
+        },
         "privacy": {
             "private_sample_count": len(_private_sample_paths(samples)),
             "raw_sample_text_exported": False,
@@ -228,6 +236,7 @@ def _privacy_report_markdown(samples: list[PackSample]) -> str:
 def _coverage_report_markdown(profile: dict[str, Any]) -> str:
     routes = profile["routes"]
     confidence = profile["summary"]["confidence"]
+    style_features = profile.get("style_features", {})
     covered = ", ".join(routes.keys()) if routes else "none"
     missing = [route for route in ("blog", "report", "message", "project") if route not in routes]
     lines = [
@@ -238,6 +247,14 @@ def _coverage_report_markdown(profile: dict[str, Any]) -> str:
         f"- Confidence: {confidence}",
         f"- Covered routes: {covered}",
         f"- Missing recommended routes: {', '.join(missing) if missing else 'none'}",
+        "",
+        "## Style Signals",
+        "",
+        f"- Signal groups: {', '.join(style_features.get('signal_groups', [])) or 'none'}",
+        f"- Sentence count: {style_features.get('sentence_count', 0)}",
+        f"- Average sentence length: {style_features.get('avg_sentence_chars', 0.0)} characters",
+        f"- First-person markers: {style_features.get('first_person_count', 0)}",
+        f"- Bullet lines: {style_features.get('bullet_line_count', 0)}",
         "",
     ]
     return "\n".join(lines)

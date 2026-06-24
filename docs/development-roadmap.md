@@ -144,6 +144,27 @@ Acceptance:
 - The exported portable `AGENTS.md` includes profile metadata and reports but
   not raw sample text.
 
+## Stage 7: Korean Style Signals
+
+Status: implemented.
+
+Scope:
+
+- Add `write_as_me/style_signals.py`.
+- Extract deterministic Korean style signals: sentence length, endings,
+  connectors, first-person markers, stance markers, bullet structure,
+  English-character ratio, and character n-grams.
+- Embed aggregate `style_features` and route-level `route_style_features` in
+  `profile.json`.
+- Surface style signal coverage in `coverage-report.md`.
+- Add a research grounding document explaining the deterministic-first design.
+
+Acceptance:
+
+- Tests cover the style signal analyzer.
+- Tests prove profile packs include style features without raw sample text.
+- `npm run docs:check` covers the updated profile pack behavior.
+
 ## Deferred Work
 
 - Web UI.
@@ -151,3 +172,5 @@ Acceptance:
 - Detector-style scoring claims.
 - Multi-language expansion.
 - Automatic voice cloning or personality simulation.
+- PII pattern scanner for phone numbers, email addresses, student ids, and
+  token-like strings.
