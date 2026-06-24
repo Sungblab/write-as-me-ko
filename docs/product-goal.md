@@ -8,6 +8,8 @@ into a reusable writing profile, Codex skill, and writing `AGENTS.md`. It also
 helps the user turn repeated writing situations into reusable writing skills.
 Profile Pack v2 adds a CLI path for building a machine-readable local profile
 pack with coverage, privacy, doctor, eval, and portable agent export surfaces.
+The profile pack should be grounded in deterministic Korean style signals before
+LLM interpretation turns those signals into reusable writing guidance.
 The goal is not to make AI text bypass detectors or perfectly clone a person.
 The goal is to stop repeating the same style and format instructions and make
 future drafting start from a reviewed local writing setup.
@@ -57,6 +59,8 @@ style, judgment, and target format?"
   not hidden model state.
 - Machine-readable pack: profile outputs should be inspectable by tests,
   scripts, and future agent integrations.
+- Deterministic first: measurable local style signals come before LLM
+  interpretation.
 - Python plus LLM: deterministic scripts provide baseline evidence, and the LLM
   interprets supported writing habits.
 - Skill factory: repeated writing rules should become reusable skills instead

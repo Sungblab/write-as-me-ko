@@ -20,6 +20,8 @@
 - 반복해서 쓰는 글쓰기 상황을 별도 `SKILL.md`로 만들 수 있습니다.
 - Profile Pack v2 CLI로 `profile.json`, `sample-manifest.json`, coverage/privacy report,
   portable `AGENTS.md`를 생성하고 검증할 수 있습니다.
+- 한국어 문장 길이, 종결어미, 접속어, 1인칭 표현, 입장 표현, 구조, 문자 n-gram
+  같은 deterministic style signal을 profile pack에 포함합니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 
@@ -263,6 +265,7 @@ python -m scripts.run_eval
 - [Development roadmap](docs/development-roadmap.md)
 - [Architecture](docs/architecture.md)
 - [Profile Pack v2](docs/profile-pack-v2.md)
+- [Research basis](docs/research-basis.md)
 - [Writing skill factory](docs/writing-skill-factory.md)
 - [Follow-up thread draft](docs/launch-followup-thread.md)
 

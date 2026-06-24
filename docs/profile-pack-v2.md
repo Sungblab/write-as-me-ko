@@ -6,6 +6,9 @@ for AI writing agents.
 It is not a detector-bypass layer and it does not export raw sample text. The
 pack stores route counts, confidence, hashes, coverage, privacy notes, and a
 portable `AGENTS.md` export that future agents can read before drafting.
+It also stores deterministic Korean style signals, such as sentence length,
+sentence endings, connectors, first-person markers, stance markers, structure,
+and character n-grams.
 
 ## Commands
 
@@ -42,7 +45,20 @@ python -m write_as_me.cli export agents --profile-pack _workspace\profile-pack-d
 - `privacy-report.md`: local-only and raw-sample export boundary.
 - `coverage-report.md`: missing route and confidence summary.
 
+`profile.json` also includes:
+
+- `style_features`: aggregate deterministic writing signals across the sample set.
+- `route_style_features`: the same signals split by route.
+
+These fields are deliberately count-based and summary-based. They are meant to
+support review and downstream skills without copying the user's original text.
+
 ## Completion Gate
 
 `npm run docs:check` runs the unit tests, the existing synthetic writing eval,
 and the Profile Pack v2 demo build/doctor/eval/export workflow.
+
+## Research Grounding
+
+See [Research Basis](research-basis.md) for the stylometry and text-style
+transfer rationale behind the deterministic-first design.
