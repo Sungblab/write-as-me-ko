@@ -2,6 +2,10 @@
   "name": "write-as-me-ko",
   "private": true,
   "scripts": {
-    "docs:check": "python -m unittest discover -s tests -v && python -m scripts.run_eval"
+    "docs:check": "python -m unittest discover -s tests -v && python -m scripts.run_eval && python -m write_as_me.cli profile build --samples examples/profile-pack-samples --output _workspace/profile-pack-demo --json && python -m write_as_me.cli doctor --profile-pack _workspace/profile-pack-demo --json && python -m write_as_me.cli eval --profile-pack _workspace/profile-pack-demo --json && python -m write_as_me.cli export agents --profile-pack _workspace/profile-pack-demo --output _workspace/profile-pack-demo/AGENTS.md --json",
+    "profile:build": "python -m write_as_me.cli profile build --samples examples/profile-pack-samples --output _workspace/profile-pack-demo --json",
+    "profile:doctor": "python -m write_as_me.cli doctor --profile-pack _workspace/profile-pack-demo --json",
+    "profile:eval": "python -m write_as_me.cli eval --profile-pack _workspace/profile-pack-demo --json",
+    "profile:export": "python -m write_as_me.cli export agents --profile-pack _workspace/profile-pack-demo --output _workspace/profile-pack-demo/AGENTS.md --json"
   }
 }

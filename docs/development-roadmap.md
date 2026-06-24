@@ -121,6 +121,29 @@ Acceptance:
   algorithm optimization.
 - `npm run docs:check` covers the factory script.
 
+## Stage 6: Profile Pack v2 CLI
+
+Status: implemented.
+
+Scope:
+
+- Add `write_as_me/profile_pack.py`.
+- Add `write_as_me/cli.py`.
+- Add `pyproject.toml` with a `write-as-me` console script.
+- Generate `profile.json`, `sample-manifest.json`, `voice-profile.md`,
+  `route-map.md`, `privacy-report.md`, and `coverage-report.md`.
+- Add `doctor`, `eval`, and `export agents` commands.
+- Add synthetic demo samples under `examples/profile-pack-samples/`.
+
+Acceptance:
+
+- Unit tests cover profile pack generation, raw-sample exclusion, CLI workflow,
+  and packaging metadata.
+- `npm run docs:check` runs the profile pack demo build, doctor, eval, and
+  export workflow.
+- The exported portable `AGENTS.md` includes profile metadata and reports but
+  not raw sample text.
+
 ## Deferred Work
 
 - Web UI.
