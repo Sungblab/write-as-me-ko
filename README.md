@@ -1,15 +1,50 @@
 # write-as-me-ko
 
-내 블로그와 포트폴리오 글을 Codex/Claude Code와 함께 분석해, 이후 글 작성에
-쓸 글쓰기용 `AGENTS.md`와 말투 프로필을 만드는 로컬 워크플로우입니다.
+[![CI](https://github.com/Sungblab/write-as-me-ko/actions/workflows/ci.yml/badge.svg)](https://github.com/Sungblab/write-as-me-ko/actions/workflows/ci.yml)
 
-[`im-not-ai`](https://github.com/epoko77-ai/im-not-ai)가 이미 나온 초안의 한국어 AI 티를 줄이는 후처리 도구에 가깝다면,
-`write-as-me-ko`는 초안을 쓰기 전에 "나는 어떤 기준과 형식으로 쓰는가"를
-에이전트와 함께 정리해두는 쪽에 가깝습니다.
+Local-first Korean author-context compiler for AI writing agents.
 
-목표는 AI detector 우회나 완벽한 문체 복제가 아닙니다. 매번 "내 스타일로",
-"너무 AI처럼 쓰지 말고", "보고서 톤으로", "교수님께 보내는 말투로"를 반복하지
-않게 만드는 재사용 가능한 한국어 글쓰기 환경이 핵심입니다.
+`write-as-me-ko`는 한국어 작성자의 실제 글 샘플을 로컬에서 분석해, Codex와
+Claude 같은 AI 에이전트가 재사용할 수 있는 `Profile Pack`, `AGENTS.md`,
+`SKILL.md`를 생성하는 오픈소스 도구입니다.
+
+매번 "내 스타일로 써줘", "보고서 톤으로 바꿔줘", "교수님께 보내는 말투로
+정리해줘"라고 반복하는 대신, 작성자의 문체와 용도별 판단 기준을 안전한
+로컬 프로필로 만들어 둡니다.
+
+```text
+local Korean samples
+  -> deterministic style signals
+  -> privacy scan without raw-value export
+  -> Profile Pack v2
+  -> AGENTS.md / Codex skill / demo report
+```
+
+## Why This Exists
+
+AI 글쓰기 도구는 초안을 빠르게 만들지만, 사용자는 매번 같은 설명을 반복합니다.
+
+- "내 블로그 말투처럼 써줘."
+- "너무 AI스럽지 않게 써줘."
+- "이건 보고서라서 근거와 한계를 분리해줘."
+- "교수님께 보내는 메시지니까 짧고 예의 있게 정리해줘."
+
+`write-as-me-ko`는 이 반복 설명을 프로젝트화합니다. 개인 글 샘플은 로컬 입력으로만
+사용하고, 외부로 내보내는 산출물에는 원문이 아니라 문체 신호, route별 작성 기준,
+개인정보 점검 결과, 재사용 가능한 에이전트 지침만 포함합니다.
+
+## What You Get
+
+| Output | Purpose |
+| --- | --- |
+| `profile.json` | machine-readable confidence, route coverage, style signals, privacy metadata |
+| `sample-manifest.json` | sample path, route, hash, character count without raw text |
+| `voice-profile.md` | Korean writing profile reviewed by the user or an agent |
+| `privacy-report.md` | local-only boundary and redacted sensitive-pattern findings |
+| `coverage-report.md` | route coverage and profile confidence report |
+| `AGENTS.md` | portable writing context for Codex, Claude Code, or another agent |
+| `SKILL.md` | reusable writing skill for repeated situations such as threads or messages |
+| `demo-report.md` | judge-readable summary of how profile-aware writing differs from generic output |
 
 ## What It Does
 
@@ -27,6 +62,41 @@
 - 심사용 demo report를 생성해 generic agent와 profile-aware agent의 차이를 한 화면에 정리합니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
+
+## Demo Snapshot
+
+Profile Pack v2 demo는 committed synthetic samples만 사용합니다. 실제 개인 글은
+필요하지 않습니다.
+
+```powershell
+npm run docs:check
+```
+
+The check builds a demo profile pack, validates the pack shape, scores reuse
+readiness, exports a portable `AGENTS.md`, and writes a judge-readable
+`demo-report.md`.
+
+```json
+{
+  "status": "pass",
+  "score": 5,
+  "checks": [
+    { "id": "confidence", "status": "pass" },
+    { "id": "route-coverage", "status": "pass" },
+    { "id": "raw-samples", "status": "pass" },
+    { "id": "style-signals", "status": "pass" },
+    { "id": "privacy-scan", "status": "pass" }
+  ]
+}
+```
+
+Example demo report claim:
+
+```text
+write-as-me-ko is a local-first Korean author-context compiler. It extracts
+reproducible style and privacy signals, then exports portable agent context
+and reusable writing skills.
+```
 
 ## Quickstart
 
