@@ -58,6 +58,8 @@ write_as_me/cli.py
       +--> judge-readable demo report
       +--> style-distance report
       +--> rewrite brief
+      +--> held-out evaluation workspace
+      +--> rewrite loop/check reports
 ```
 
 Raw samples are inputs only. They should not be copied into generated portable
@@ -154,15 +156,33 @@ variants for the same route. It also detects configured Korean AI-tell risks and
 builds rewrite briefs for Codex or Claude Code. It reads raw draft inputs at
 runtime, but reports only distances, risk labels, and instructions.
 
+### `write_as_me/heldout.py`
+
+The Stage 10 held-out workflow builds a local profile pack from training samples
+only, records the excluded held-out sample as path/hash metadata, and compares
+that held-out human baseline with generic and profile-guided drafts. It reads
+the held-out text locally at compare time, but does not copy raw sample text into
+the manifest or report.
+
+### `write_as_me/rewrite_loop.py`
+
+The rewrite loop prepares a before report, rewrite brief, and manifest for an
+existing draft. After an agent writes a revised draft, the check step compares
+before/after style-distance and AI-tell risk counts. The report is local style
+evidence, not an AI detector result.
+
 ### `write_as_me/cli.py`
 
 The CLI exposes `profile build`, `doctor`, `eval`, `export agents`,
-`demo report`, `style-distance`, and `rewrite brief`.
+`demo report`, `style-distance`, `heldout prepare`, `heldout compare`,
+`rewrite brief`, `rewrite loop`, and `rewrite check`.
 `doctor` validates the profile pack shape and raw-sample boundary. `eval` checks
 whether the pack is strong enough for reuse. `export agents` writes a portable
 `AGENTS.md` from the pack reports. `demo report` writes a contest-friendly
 summary report. `style-distance` writes local distance/risk evidence, and
 `rewrite brief` prepares an agent-readable revision brief for an existing draft.
+The Stage 10 commands prepare held-out evaluation workspaces and verify whether
+a rewrite moved closer to the profile.
 
 ### `scripts/init_writing_workspace.py`
 
@@ -219,6 +239,10 @@ python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --jso
 python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 python -m write_as_me.cli style-distance --profile-pack _workspace\profile-pack-demo --route blog --draft examples\profile-pack-samples\blog\post.md --output _workspace\profile-pack-demo\style-distance-report.md --json
 python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input examples\profile-pack-samples\blog\post.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
+python -m write_as_me.cli heldout prepare --samples examples\profile-pack-samples --output _workspace\stage10-heldout --route blog --json
+python -m write_as_me.cli heldout compare --workspace _workspace\stage10-heldout --generic examples\stage10\generic.md --profile-guided examples\stage10\profile-guided.md --output _workspace\stage10-heldout\heldout-report.md --json
+python -m write_as_me.cli rewrite loop --profile-pack _workspace\profile-pack-demo --input examples\stage10\rewrite-original.md --route blog --output-dir _workspace\stage10-rewrite --json
+python -m write_as_me.cli rewrite check --profile-pack _workspace\profile-pack-demo --original examples\stage10\rewrite-original.md --rewritten examples\stage10\rewrite-revised.md --route blog --output _workspace\stage10-rewrite\rewrite-check.md --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md

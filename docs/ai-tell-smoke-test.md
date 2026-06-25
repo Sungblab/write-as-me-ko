@@ -98,3 +98,40 @@ python -m write_as_me.cli rewrite brief `
 The rewrite brief is for Codex, Claude Code, or another writing agent. It
 contains profile metadata, style-distance evidence, AI-tell risks, and rewrite
 instructions, but it does not include raw profile samples.
+
+Stage 10 adds the local loop that should run before any optional external smoke
+test:
+
+```powershell
+python -m write_as_me.cli heldout prepare `
+  --samples samples `
+  --output dist\heldout-eval `
+  --route blog `
+  --json
+
+python -m write_as_me.cli heldout compare `
+  --workspace dist\heldout-eval `
+  --generic generic.md `
+  --profile-guided profile-guided.md `
+  --output dist\heldout-eval\heldout-report.md `
+  --json
+
+python -m write_as_me.cli rewrite loop `
+  --profile-pack dist\profile-pack `
+  --input draft.md `
+  --route blog `
+  --output-dir dist\rewrite-loop `
+  --json
+
+python -m write_as_me.cli rewrite check `
+  --profile-pack dist\profile-pack `
+  --original draft.md `
+  --rewritten rewritten.md `
+  --route blog `
+  --output dist\rewrite-loop\rewrite-check.md `
+  --json
+```
+
+These commands produce local evidence about profile distance and rewrite
+movement. They should not be described as Copykiller automation or detector
+bypass.

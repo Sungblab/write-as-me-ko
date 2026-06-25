@@ -76,6 +76,16 @@ The Stage 9 local workflow turns this into two checks:
 - `rewrite brief`: produce an agent-readable revision brief with distance,
   risk points, rewrite mode, and strict fact-preservation constraints.
 
+The Stage 10 local workflow makes the check closer to real use:
+
+- `heldout prepare`: exclude selected local samples from the training profile
+  and keep only metadata in the held-out manifest.
+- `heldout compare`: compare the excluded human sample with generic and
+  profile-guided drafts for the same route.
+- `rewrite loop` and `rewrite check`: produce a before report and brief, then
+  verify whether a revised draft moved closer to the profile without treating
+  that as an external detector result.
+
 ## Sources
 
 - Mike Kestemont, "Function Words in Authorship Attribution. From Black Magic to Theory?" ACL Anthology, 2014: https://aclanthology.org/W14-0908/

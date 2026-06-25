@@ -63,6 +63,8 @@ AI 글쓰기 도구는 초안을 빠르게 만들지만, 사용자는 매번 같
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
 - 기존 초안의 style-distance와 AI-tell risk를 점검하고, 에이전트용 rewrite brief를 생성합니다.
+- 실제/held-out 샘플을 학습에서 제외한 profile pack으로 generic draft와 profile-guided draft를 비교합니다.
+- 기존 초안을 고친 뒤 rewrite check로 style-distance 개선과 AI-tell risk 변화를 확인합니다.
 
 ## Demo Snapshot
 
@@ -204,6 +206,10 @@ python -m write_as_me.cli export agents --profile-pack _workspace\profile-pack-d
 python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 python -m write_as_me.cli style-distance --profile-pack _workspace\profile-pack-demo --route blog --draft examples\profile-pack-samples\blog\post.md --output _workspace\profile-pack-demo\style-distance-report.md --json
 python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input examples\profile-pack-samples\blog\post.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
+python -m write_as_me.cli heldout prepare --samples examples\profile-pack-samples --output _workspace\stage10-heldout --route blog --json
+python -m write_as_me.cli heldout compare --workspace _workspace\stage10-heldout --generic examples\stage10\generic.md --profile-guided examples\stage10\profile-guided.md --output _workspace\stage10-heldout\heldout-report.md --json
+python -m write_as_me.cli rewrite loop --profile-pack _workspace\profile-pack-demo --input examples\stage10\rewrite-original.md --route blog --output-dir _workspace\stage10-rewrite --json
+python -m write_as_me.cli rewrite check --profile-pack _workspace\profile-pack-demo --original examples\stage10\rewrite-original.md --rewritten examples\stage10\rewrite-revised.md --route blog --output _workspace\stage10-rewrite\rewrite-check.md --json
 ```
 
 이후 글을 쓸 때는 생성된 글쓰기용 `AGENTS.md`나 Codex skill을 참고합니다.
@@ -369,6 +375,25 @@ signals와 비교합니다. 외부 AI detector 점수는 자동화하지 않고 
 ```powershell
 python -m write_as_me.cli style-distance --profile-pack dist\profile-pack --route blog --draft draft.md --output dist\style-distance-report.md --json
 python -m write_as_me.cli rewrite brief --profile-pack dist\profile-pack --input draft.md --route blog --mode balanced --output dist\rewrite-brief.md --json
+```
+
+Stage 10은 실제 개인 글을 바로 커밋하지 않고 local held-out 검증에 사용합니다.
+`heldout prepare`는 선택한 샘플을 학습 profile pack에서 제외하고
+`heldout-manifest.json`에는 원문 대신 경로, route, hash, character count만 남깁니다.
+그 뒤 generic draft와 profile-guided draft를 같은 held-out human baseline에 대해 비교합니다.
+
+```powershell
+python -m write_as_me.cli heldout prepare --samples samples --output dist\heldout-eval --route blog --json
+python -m write_as_me.cli heldout compare --workspace dist\heldout-eval --generic generic.md --profile-guided profile-guided.md --output dist\heldout-eval\heldout-report.md --json
+```
+
+이미 쓴 글을 내 말투에 더 가깝게 고칠 때는 rewrite loop를 씁니다. 먼저
+`rewrite loop`가 before report와 agent rewrite brief를 만들고, 수정본이 생기면
+`rewrite check`가 수정 전후 style-distance와 AI-tell risk count를 비교합니다.
+
+```powershell
+python -m write_as_me.cli rewrite loop --profile-pack dist\profile-pack --input draft.md --route blog --output-dir dist\rewrite-loop --json
+python -m write_as_me.cli rewrite check --profile-pack dist\profile-pack --original draft.md --rewritten rewritten.md --route blog --output dist\rewrite-loop\rewrite-check.md --json
 ```
 
 ## Verification

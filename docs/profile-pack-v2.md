@@ -57,6 +57,20 @@ Write an agent rewrite brief:
 python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input draft.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
 ```
 
+Prepare and compare a held-out evaluation:
+
+```powershell
+python -m write_as_me.cli heldout prepare --samples samples --output dist\heldout-eval --route blog --json
+python -m write_as_me.cli heldout compare --workspace dist\heldout-eval --generic generic.md --profile-guided profile-guided.md --output dist\heldout-eval\heldout-report.md --json
+```
+
+Prepare and check a rewrite loop:
+
+```powershell
+python -m write_as_me.cli rewrite loop --profile-pack dist\profile-pack --input draft.md --route blog --output-dir dist\rewrite-loop --json
+python -m write_as_me.cli rewrite check --profile-pack dist\profile-pack --original draft.md --rewritten rewritten.md --route blog --output dist\rewrite-loop\rewrite-check.md --json
+```
+
 ## Artifacts
 
 - `profile.json`: machine-readable summary, confidence, route counts, and privacy metadata.
@@ -68,6 +82,10 @@ python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-d
 - `demo-report.md`: judge-readable summary of profile, style, privacy, and expected agent behavior.
 - `style-distance-report.md`: optional local draft distance and AI-tell risk report.
 - `rewrite-brief.md`: optional agent instructions for revising an existing draft.
+- `heldout-manifest.json`: optional local split manifest with training and held-out metadata only.
+- `heldout-report.md`: optional held-out human, generic, and profile-guided comparison report.
+- `rewrite-loop.json`: optional rewrite workflow manifest.
+- `rewrite-check.md`: optional before/after rewrite distance report.
 
 `profile.json` also includes:
 
@@ -82,7 +100,8 @@ support review and downstream skills without copying the user's original text.
 
 `npm run docs:check` runs the unit tests, the existing synthetic writing eval,
 the Profile Pack v2 demo build/doctor/eval/export/demo-report workflow, and the
-Stage 9 style-distance/rewrite-brief demo.
+Stage 9 style-distance/rewrite-brief demo. It also runs the Stage 10 held-out
+and rewrite-loop demo with committed synthetic examples.
 
 ## Research Grounding
 

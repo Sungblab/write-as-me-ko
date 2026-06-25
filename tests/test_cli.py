@@ -145,6 +145,129 @@ class CliTests(unittest.TestCase):
         self.assertIn("Rewrite Instructions", brief_text)
         self.assertNotIn("먼저 직접 해봤다", brief_text)
 
+    def test_stage10_heldout_and_rewrite_loop_cli(self) -> None:
+        from write_as_me.cli import main
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            samples = root / "samples"
+            heldout_workspace = root / "heldout"
+            generic = root / "generic.md"
+            guided = root / "guided.md"
+            heldout_report = root / "heldout-report.md"
+            rewrite_loop = root / "rewrite-loop"
+            rewrite_check = root / "rewrite-check.md"
+            draft = root / "draft.md"
+            rewritten = root / "rewritten.md"
+            (samples / "blog").mkdir(parents=True)
+            (samples / "blog" / "a.md").write_text(
+                "나는 먼저 직접 해봤다. 그런데 결과가 애매했다. 그래서 확인한 사실과 추정을 나눠 적었다.",
+                encoding="utf-8",
+            )
+            (samples / "blog" / "b.md").write_text(
+                "나는 처음엔 쉽게 봤다. 그런데 직접 돌려보니 달랐다. 그래서 다음에 확인할 걸 남겼다.",
+                encoding="utf-8",
+            )
+            generic.write_text(
+                "결론적으로 이 경험은 매우 중요한 성장 과정입니다. 이를 통해 더 나은 결과를 만들었습니다.",
+                encoding="utf-8",
+            )
+            guided.write_text(
+                "나는 처음엔 쉽게 봤다. 그런데 직접 해보니 판단이 바뀌었다. 그래서 다음 확인할 걸 남겼다.",
+                encoding="utf-8",
+            )
+            draft.write_text(generic.read_text(encoding="utf-8"), encoding="utf-8")
+            rewritten.write_text(guided.read_text(encoding="utf-8"), encoding="utf-8")
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                prepare_exit = main(
+                    [
+                        "heldout",
+                        "prepare",
+                        "--samples",
+                        str(samples),
+                        "--output",
+                        str(heldout_workspace),
+                        "--route",
+                        "blog",
+                        "--json",
+                    ]
+                )
+            prepare_payload = json.loads(stdout.getvalue())
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                compare_exit = main(
+                    [
+                        "heldout",
+                        "compare",
+                        "--workspace",
+                        str(heldout_workspace),
+                        "--generic",
+                        str(generic),
+                        "--profile-guided",
+                        str(guided),
+                        "--output",
+                        str(heldout_report),
+                        "--json",
+                    ]
+                )
+            compare_payload = json.loads(stdout.getvalue())
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                loop_exit = main(
+                    [
+                        "rewrite",
+                        "loop",
+                        "--profile-pack",
+                        str(heldout_workspace / "profile-pack"),
+                        "--input",
+                        str(draft),
+                        "--route",
+                        "blog",
+                        "--output-dir",
+                        str(rewrite_loop),
+                        "--json",
+                    ]
+                )
+            loop_payload = json.loads(stdout.getvalue())
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                check_exit = main(
+                    [
+                        "rewrite",
+                        "check",
+                        "--profile-pack",
+                        str(heldout_workspace / "profile-pack"),
+                        "--original",
+                        str(draft),
+                        "--rewritten",
+                        str(rewritten),
+                        "--route",
+                        "blog",
+                        "--output",
+                        str(rewrite_check),
+                        "--json",
+                    ]
+                )
+            check_payload = json.loads(stdout.getvalue())
+            heldout_report_exists = heldout_report.exists()
+            rewrite_check_exists = rewrite_check.exists()
+
+        self.assertEqual(prepare_exit, 0)
+        self.assertEqual(prepare_payload["status"], "prepared")
+        self.assertEqual(compare_exit, 0)
+        self.assertEqual(compare_payload["status"], "ok")
+        self.assertEqual(loop_exit, 0)
+        self.assertEqual(loop_payload["status"], "prepared")
+        self.assertEqual(check_exit, 0)
+        self.assertTrue(check_payload["distance_improved"])
+        self.assertTrue(heldout_report_exists)
+        self.assertTrue(rewrite_check_exists)
+
 
 if __name__ == "__main__":
     unittest.main()

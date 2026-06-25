@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Any
 
 from .demo_report import write_demo_report
+from .heldout import compare_heldout_workspace, prepare_heldout_workspace
 from .profile_pack import build_profile_pack
+from .rewrite_loop import check_rewrite, prepare_rewrite_loop
 from .style_distance import (
     build_rewrite_brief,
     build_style_distance_report,
@@ -317,6 +319,65 @@ def _handle_rewrite_brief(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_heldout_prepare(args: argparse.Namespace) -> int:
+    payload = prepare_heldout_workspace(
+        Path(args.samples),
+        Path(args.output),
+        route=args.route,
+        holdout_count=args.holdout_count,
+    )
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"{payload['status']}: {payload['workspace']}")
+    return 0 if payload["status"] in {"prepared", "warn"} else 1
+
+
+def _handle_heldout_compare(args: argparse.Namespace) -> int:
+    payload = compare_heldout_workspace(
+        Path(args.workspace),
+        Path(args.generic),
+        Path(args.profile_guided),
+        output_path=Path(args.output) if args.output else None,
+        route=args.route,
+    )
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"heldout compare: {payload['status']}")
+    return 0 if payload["status"] == "ok" else 1
+
+
+def _handle_rewrite_loop(args: argparse.Namespace) -> int:
+    payload = prepare_rewrite_loop(
+        Path(args.profile_pack),
+        Path(args.input),
+        Path(args.output_dir),
+        route=args.route,
+        mode=args.mode,
+    )
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"rewrite loop: {payload['workspace']}")
+    return 0
+
+
+def _handle_rewrite_check(args: argparse.Namespace) -> int:
+    payload = check_rewrite(
+        Path(args.profile_pack),
+        Path(args.original),
+        Path(args.rewritten),
+        Path(args.output),
+        route=args.route,
+    )
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"rewrite check: {payload['status']}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build Korean author-context profile packs.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -366,6 +427,25 @@ def build_parser() -> argparse.ArgumentParser:
     style_distance.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     style_distance.set_defaults(func=_handle_style_distance)
 
+    heldout = subparsers.add_parser("heldout", help="Held-out sample evaluation commands")
+    heldout_subparsers = heldout.add_subparsers(dest="heldout_command", required=True)
+    heldout_prepare = heldout_subparsers.add_parser("prepare", help="Build a profile pack with held-out samples excluded")
+    heldout_prepare.add_argument("--samples", default="samples", help="Samples directory")
+    heldout_prepare.add_argument("--output", default="dist/heldout-eval", help="Held-out workspace output directory")
+    heldout_prepare.add_argument("--route", default=None, help="Optional route to hold out, such as blog")
+    heldout_prepare.add_argument("--holdout-count", type=int, default=1, help="Number of samples to hold out")
+    heldout_prepare.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    heldout_prepare.set_defaults(func=_handle_heldout_prepare)
+
+    heldout_compare = heldout_subparsers.add_parser("compare", help="Compare held-out human, generic, and profile-guided drafts")
+    heldout_compare.add_argument("--workspace", default="dist/heldout-eval", help="Held-out workspace from heldout prepare")
+    heldout_compare.add_argument("--generic", required=True, help="Generic LLM draft file")
+    heldout_compare.add_argument("--profile-guided", required=True, help="Profile-guided draft file")
+    heldout_compare.add_argument("--route", default=None, help="Override route")
+    heldout_compare.add_argument("--output", help="Optional markdown report output path")
+    heldout_compare.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    heldout_compare.set_defaults(func=_handle_heldout_compare)
+
     rewrite = subparsers.add_parser("rewrite", help="Rewrite workflow commands")
     rewrite_subparsers = rewrite.add_subparsers(dest="rewrite_command", required=True)
     brief = rewrite_subparsers.add_parser("brief", help="Write an agent rewrite brief")
@@ -381,6 +461,29 @@ def build_parser() -> argparse.ArgumentParser:
     brief.add_argument("--output", required=True, help="Rewrite brief output path")
     brief.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     brief.set_defaults(func=_handle_rewrite_brief)
+
+    loop = rewrite_subparsers.add_parser("loop", help="Prepare a full local rewrite loop workspace")
+    loop.add_argument("--profile-pack", default="dist/profile-pack", help="Profile pack directory")
+    loop.add_argument("--input", required=True, help="Draft file to rewrite")
+    loop.add_argument("--route", required=True, help="Target route, such as blog, report, message, or project")
+    loop.add_argument(
+        "--mode",
+        choices=["minimal", "balanced", "strong"],
+        default="balanced",
+        help="Rewrite strength",
+    )
+    loop.add_argument("--output-dir", required=True, help="Rewrite loop output directory")
+    loop.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    loop.set_defaults(func=_handle_rewrite_loop)
+
+    check = rewrite_subparsers.add_parser("check", help="Check whether a rewrite moved closer to the profile")
+    check.add_argument("--profile-pack", default="dist/profile-pack", help="Profile pack directory")
+    check.add_argument("--original", required=True, help="Original draft file")
+    check.add_argument("--rewritten", required=True, help="Rewritten draft file")
+    check.add_argument("--route", required=True, help="Target route, such as blog, report, message, or project")
+    check.add_argument("--output", required=True, help="Rewrite check report output path")
+    check.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    check.set_defaults(func=_handle_rewrite_check)
 
     return parser
 
