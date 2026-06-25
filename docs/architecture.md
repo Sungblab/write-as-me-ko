@@ -56,6 +56,8 @@ write_as_me/cli.py
       +--> doctor / eval
       +--> portable AGENTS.md export
       +--> judge-readable demo report
+      +--> style-distance report
+      +--> rewrite brief
 ```
 
 Raw samples are inputs only. They should not be copied into generated portable
@@ -144,14 +146,23 @@ pack metadata. It summarizes style evidence, privacy risk, route coverage, and
 how a profile-aware agent should differ from a generic agent without including
 raw sample text.
 
+### `write_as_me/style_distance.py`
+
+The Stage 9 evaluator compares drafts against profile-pack style signals. It can
+score one draft or compare held-out human, generic LLM, and profile-guided
+variants for the same route. It also detects configured Korean AI-tell risks and
+builds rewrite briefs for Codex or Claude Code. It reads raw draft inputs at
+runtime, but reports only distances, risk labels, and instructions.
+
 ### `write_as_me/cli.py`
 
-The CLI exposes `profile build`, `doctor`, `eval`, `export agents`, and
-`demo report`.
+The CLI exposes `profile build`, `doctor`, `eval`, `export agents`,
+`demo report`, `style-distance`, and `rewrite brief`.
 `doctor` validates the profile pack shape and raw-sample boundary. `eval` checks
 whether the pack is strong enough for reuse. `export agents` writes a portable
 `AGENTS.md` from the pack reports. `demo report` writes a contest-friendly
-summary report.
+summary report. `style-distance` writes local distance/risk evidence, and
+`rewrite brief` prepares an agent-readable revision brief for an existing draft.
 
 ### `scripts/init_writing_workspace.py`
 
@@ -206,6 +217,8 @@ python -m write_as_me.cli profile build --samples examples\profile-pack-samples 
 python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
+python -m write_as_me.cli style-distance --profile-pack _workspace\profile-pack-demo --route blog --draft examples\profile-pack-samples\blog\post.md --output _workspace\profile-pack-demo\style-distance-report.md --json
+python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input examples\profile-pack-samples\blog\post.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
 .\scripts\smoke_profile.ps1
 python -m scripts.init_writing_workspace --samples samples --profile _workspace\voice-profile.init.md --agents _workspace\writing\AGENTS.md --repo-root .
 python -m scripts.export_agent_context --output _workspace\writing\AGENTS.md

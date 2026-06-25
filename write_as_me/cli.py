@@ -7,6 +7,12 @@ from typing import Any
 
 from .demo_report import write_demo_report
 from .profile_pack import build_profile_pack
+from .style_distance import (
+    build_rewrite_brief,
+    build_style_distance_report,
+    compare_variants,
+    evaluate_draft,
+)
 
 
 REQUIRED_PACK_FILES = (
@@ -246,6 +252,71 @@ def _handle_demo_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_style_distance(args: argparse.Namespace) -> int:
+    profile_pack = Path(args.profile_pack)
+    if args.human and args.generic and args.profile_guided:
+        payload = compare_variants(
+            profile_pack,
+            Path(args.human).read_text(encoding="utf-8"),
+            Path(args.generic).read_text(encoding="utf-8"),
+            Path(args.profile_guided).read_text(encoding="utf-8"),
+            route=args.route,
+        )
+    elif args.draft:
+        payload = evaluate_draft(
+            profile_pack,
+            Path(args.draft).read_text(encoding="utf-8"),
+            route=args.route,
+        )
+    else:
+        payload = {
+            "status": "fail",
+            "message": "Provide --draft or all of --human, --generic, and --profile-guided.",
+        }
+        if args.json:
+            _print_json(payload)
+        else:
+            print(payload["message"])
+        return 1
+
+    payload["status"] = "ok"
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(build_style_distance_report(payload), encoding="utf-8")
+        payload["output"] = str(output)
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"style-distance: {payload['status']}")
+    return 0
+
+
+def _handle_rewrite_brief(args: argparse.Namespace) -> int:
+    brief = build_rewrite_brief(
+        Path(args.profile_pack),
+        Path(args.input),
+        route=args.route,
+        mode=args.mode,
+    )
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(brief, encoding="utf-8")
+    payload = {
+        "status": "written",
+        "profile_pack": str(args.profile_pack),
+        "input": str(args.input),
+        "output": str(output),
+        "route": args.route,
+        "mode": args.mode,
+    }
+    if args.json:
+        _print_json(payload)
+    else:
+        print(f"wrote {output}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build Korean author-context profile packs.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -283,6 +354,33 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--output", default="dist/demo-report.md", help="Output report path")
     report.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     report.set_defaults(func=_handle_demo_report)
+
+    style_distance = subparsers.add_parser("style-distance", help="Score draft style distance")
+    style_distance.add_argument("--profile-pack", default="dist/profile-pack", help="Profile pack directory")
+    style_distance.add_argument("--route", default=None, help="Route to compare against, such as blog or message")
+    style_distance.add_argument("--draft", help="Single draft file to evaluate")
+    style_distance.add_argument("--human", help="Held-out human baseline file")
+    style_distance.add_argument("--generic", help="Generic LLM baseline file")
+    style_distance.add_argument("--profile-guided", help="Profile-guided draft file")
+    style_distance.add_argument("--output", help="Optional markdown report output path")
+    style_distance.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    style_distance.set_defaults(func=_handle_style_distance)
+
+    rewrite = subparsers.add_parser("rewrite", help="Rewrite workflow commands")
+    rewrite_subparsers = rewrite.add_subparsers(dest="rewrite_command", required=True)
+    brief = rewrite_subparsers.add_parser("brief", help="Write an agent rewrite brief")
+    brief.add_argument("--profile-pack", default="dist/profile-pack", help="Profile pack directory")
+    brief.add_argument("--input", required=True, help="Draft file to rewrite")
+    brief.add_argument("--route", required=True, help="Target route, such as blog, report, message, or project")
+    brief.add_argument(
+        "--mode",
+        choices=["minimal", "balanced", "strong"],
+        default="balanced",
+        help="Rewrite strength",
+    )
+    brief.add_argument("--output", required=True, help="Rewrite brief output path")
+    brief.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    brief.set_defaults(func=_handle_rewrite_brief)
 
     return parser
 

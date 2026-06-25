@@ -53,3 +53,48 @@ Do not describe this as AI detector bypass. The product promise remains reusable
 author context and Korean writing quality control. External detector results can
 help evaluate whether generated drafts still look mechanically AI-written, but
 they do not prove authorship or guarantee non-detection.
+
+## Implemented Local Workflow
+
+Stage 9 implements local checks before any optional external smoke test.
+
+Evaluate one draft against a profile pack:
+
+```powershell
+python -m write_as_me.cli style-distance `
+  --profile-pack dist\profile-pack `
+  --route blog `
+  --draft draft.md `
+  --output dist\style-distance-report.md `
+  --json
+```
+
+Compare a held-out human baseline, a generic LLM draft, and a profile-guided
+draft:
+
+```powershell
+python -m write_as_me.cli style-distance `
+  --profile-pack dist\profile-pack `
+  --route blog `
+  --human heldout-human.md `
+  --generic generic-llm.md `
+  --profile-guided profile-guided.md `
+  --output dist\style-distance-report.md `
+  --json
+```
+
+Generate an agent rewrite brief for an existing draft:
+
+```powershell
+python -m write_as_me.cli rewrite brief `
+  --profile-pack dist\profile-pack `
+  --input draft.md `
+  --route blog `
+  --mode balanced `
+  --output dist\rewrite-brief.md `
+  --json
+```
+
+The rewrite brief is for Codex, Claude Code, or another writing agent. It
+contains profile metadata, style-distance evidence, AI-tell risks, and rewrite
+instructions, but it does not include raw profile samples.

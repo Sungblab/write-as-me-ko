@@ -189,7 +189,7 @@ Acceptance:
 
 ## Stage 9: AI-Tell and Style-Distance Evaluation
 
-Status: planned.
+Status: implemented.
 
 Scope:
 
@@ -212,6 +212,7 @@ Acceptance:
 - Reports separate implemented local checks from optional external detector
   observations.
 - Docs continue to state that the project does not guarantee AI detector bypass.
+- `npm run docs:check` runs the Stage 9 style-distance and rewrite brief demo.
 
 ## Deferred Work
 

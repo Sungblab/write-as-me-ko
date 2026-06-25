@@ -69,6 +69,13 @@ should not become a product guarantee. Detector results are sensitive to domain,
 length, model, and revision behavior, and should be recorded separately from
 local deterministic evaluation.
 
+The Stage 9 local workflow turns this into two checks:
+
+- `style-distance`: compare a draft against profile-pack style signals, or
+  compare human/generic/profile-guided variants for the same route.
+- `rewrite brief`: produce an agent-readable revision brief with distance,
+  risk points, rewrite mode, and strict fact-preservation constraints.
+
 ## Sources
 
 - Mike Kestemont, "Function Words in Authorship Attribution. From Black Magic to Theory?" ACL Anthology, 2014: https://aclanthology.org/W14-0908/
