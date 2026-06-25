@@ -103,6 +103,47 @@ and reusable writing skills.
 이 레포는 사용자가 명령어를 외워서 직접 돌리는 도구라기보다, Codex/Claude Code와
 대화하면서 글쓰기 환경을 만들어가는 워크플로우입니다.
 
+### Copy-paste setup prompt
+
+Codex, Claude Code, or another coding agent can set up the project for you.
+Open your agent in the folder where you want the repository cloned, then paste:
+
+```text
+이 저장소를 클론해서 한국어 글쓰기 에이전트 환경을 세팅해줘.
+
+Repo:
+https://github.com/Sungblab/write-as-me-ko
+
+목표:
+- write-as-me-ko를 로컬에 설치하고 동작 확인해줘.
+- 내 한국어 글 샘플을 분석해서 Profile Pack, AGENTS.md, writing skill을 만들 수 있게 준비해줘.
+- 개인 원문 샘플은 git에 올리지 말고 로컬에서만 다뤄줘.
+- AI 탐지 우회가 아니라, 재사용 가능한 한국어 작성 기준과 문체 참고 환경을 만드는 데 집중해줘.
+
+진행:
+1. repo를 clone하고 README, docs/profile-pack-v2.md, docs/architecture.md를 읽어줘.
+2. Python 3.11+ 환경을 확인해줘.
+3. 먼저 demo workflow를 실행해서 정상 동작을 검증해줘.
+   - npm run docs:check
+4. 내가 제공한 샘플이 있으면 samples/ 아래에 route별로 정리해줘.
+   - blog/
+   - report/
+   - message/
+   - project/
+   - private/ 는 로컬 전용으로만 취급
+5. 샘플이 있으면 Profile Pack을 생성해줘.
+   - python -m write_as_me.cli profile build --samples samples --output dist/profile-pack --json
+   - python -m write_as_me.cli doctor --profile-pack dist/profile-pack --json
+   - python -m write_as_me.cli eval --profile-pack dist/profile-pack --json
+   - python -m write_as_me.cli export agents --profile-pack dist/profile-pack --output dist/writing/AGENTS.md --json
+6. Codex 환경이면 .\scripts\install_codex.ps1 -Force 로 skill 설치까지 해줘.
+7. 마지막에 생성된 파일, 검증 결과, 개인정보 관련 주의사항을 요약해줘.
+
+주의:
+- samples/private/ 또는 *.local.md 파일은 절대 커밋하지 마.
+- 생성된 프로필은 자동 정답이 아니라 사용자가 검토할 초안으로 취급해줘.
+```
+
 먼저 이 레포를 Codex 또는 Claude Code에서 엽니다. 그다음 내 블로그, 포트폴리오,
 보고서, 메시지, 프로젝트 문서 샘플을 `samples/` 아래에 넣거나 샘플이 있는 로컬
 경로를 알려줍니다.
