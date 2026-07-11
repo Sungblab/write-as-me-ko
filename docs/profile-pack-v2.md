@@ -45,6 +45,18 @@ Write a judge-readable demo report:
 python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
 ```
 
+Score a draft against profile-pack style signals:
+
+```powershell
+python -m write_as_me.cli style-distance --profile-pack _workspace\profile-pack-demo --route blog --draft draft.md --output _workspace\profile-pack-demo\style-distance-report.md --json
+```
+
+Write an agent rewrite brief:
+
+```powershell
+python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input draft.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
+```
+
 ## Artifacts
 
 - `profile.json`: machine-readable summary, confidence, route counts, and privacy metadata.
@@ -54,6 +66,8 @@ python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-dem
 - `privacy-report.md`: local-only and raw-sample export boundary.
 - `coverage-report.md`: missing route and confidence summary.
 - `demo-report.md`: judge-readable summary of profile, style, privacy, and expected agent behavior.
+- `style-distance-report.md`: optional local draft distance and AI-tell risk report.
+- `rewrite-brief.md`: optional agent instructions for revising an existing draft.
 
 `profile.json` also includes:
 
@@ -67,7 +81,8 @@ support review and downstream skills without copying the user's original text.
 ## Completion Gate
 
 `npm run docs:check` runs the unit tests, the existing synthetic writing eval,
-and the Profile Pack v2 demo build/doctor/eval/export/demo-report workflow.
+the Profile Pack v2 demo build/doctor/eval/export/demo-report workflow, and the
+Stage 9 style-distance/rewrite-brief demo.
 
 ## Research Grounding
 

@@ -59,8 +59,22 @@ For `write-as-me-ko`, the practical evaluation dimensions are:
 - content preservation: facts, names, dates, numbers, quotes, and links remain intact
 - route fit: a report remains a report, a message remains a message
 - style adherence: generated output follows the profile within confidence limits
+- style distance: generated output should move closer to held-out user prose
+  than a generic LLM baseline does
 - natural Korean: avoid mechanical transitions and translationese
 - privacy: raw samples and obvious private identifiers do not leak into exports
+
+External detector scores can be useful as smoke-test observations, but they
+should not become a product guarantee. Detector results are sensitive to domain,
+length, model, and revision behavior, and should be recorded separately from
+local deterministic evaluation.
+
+The Stage 9 local workflow turns this into two checks:
+
+- `style-distance`: compare a draft against profile-pack style signals, or
+  compare human/generic/profile-guided variants for the same route.
+- `rewrite brief`: produce an agent-readable revision brief with distance,
+  risk points, rewrite mode, and strict fact-preservation constraints.
 
 ## Sources
 

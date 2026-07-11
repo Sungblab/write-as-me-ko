@@ -62,6 +62,7 @@ AI 글쓰기 도구는 초안을 빠르게 만들지만, 사용자는 매번 같
 - 심사용 demo report를 생성해 generic agent와 profile-aware agent의 차이를 한 화면에 정리합니다.
 - 원문 샘플을 export 결과에 복사하지 않고, 요약된 규칙과 프로필만 사용합니다.
 - synthetic before/after 사례로 사실 보존, 장르 유지, 한국어 자연스러움, 프로필 반영을 점검합니다.
+- 기존 초안의 style-distance와 AI-tell risk를 점검하고, 에이전트용 rewrite brief를 생성합니다.
 
 ## Demo Snapshot
 
@@ -201,6 +202,8 @@ python -m write_as_me.cli doctor --profile-pack _workspace\profile-pack-demo --j
 python -m write_as_me.cli eval --profile-pack _workspace\profile-pack-demo --json
 python -m write_as_me.cli export agents --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\AGENTS.md --json
 python -m write_as_me.cli demo report --profile-pack _workspace\profile-pack-demo --output _workspace\profile-pack-demo\demo-report.md --json
+python -m write_as_me.cli style-distance --profile-pack _workspace\profile-pack-demo --route blog --draft examples\profile-pack-samples\blog\post.md --output _workspace\profile-pack-demo\style-distance-report.md --json
+python -m write_as_me.cli rewrite brief --profile-pack _workspace\profile-pack-demo --input examples\profile-pack-samples\blog\post.md --route blog --mode balanced --output _workspace\profile-pack-demo\rewrite-brief.md --json
 ```
 
 이후 글을 쓸 때는 생성된 글쓰기용 `AGENTS.md`나 Codex skill을 참고합니다.
@@ -323,6 +326,7 @@ write_as_me/
   demo_report.py
   profile_pack.py
   privacy_scanner.py
+  style_distance.py
   style_signals.py
 examples/profile-pack-samples/
 docs/profile-pack-v2.md
@@ -357,6 +361,15 @@ python -m scripts.run_eval
 
 결과는 `_workspace/eval/evaluation-report.md`에 생성됩니다. `_workspace/`는 git에
 올라가지 않습니다.
+
+Stage 9 평가는 기존 초안이나 비교용 세 변형을 profile pack의 deterministic style
+signals와 비교합니다. 외부 AI detector 점수는 자동화하지 않고 선택적 smoke evidence로만
+다룹니다.
+
+```powershell
+python -m write_as_me.cli style-distance --profile-pack dist\profile-pack --route blog --draft draft.md --output dist\style-distance-report.md --json
+python -m write_as_me.cli rewrite brief --profile-pack dist\profile-pack --input draft.md --route blog --mode balanced --output dist\rewrite-brief.md --json
+```
 
 ## Verification
 

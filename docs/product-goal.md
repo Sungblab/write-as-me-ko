@@ -12,6 +12,9 @@ The profile pack should be grounded in deterministic Korean style signals before
 LLM interpretation turns those signals into reusable writing guidance.
 Contest-facing outputs should also include a privacy scan and a demo report so
 reviewers can see the tool's safety and behavior without reading private samples.
+Stage 9 adds local style-distance and rewrite-brief checks so existing drafts can
+be evaluated and revised against the profile before any optional external smoke
+test.
 The goal is not to make AI text bypass detectors or perfectly clone a person.
 The goal is to stop repeating the same style and format instructions and make
 future drafting start from a reviewed local writing setup.
@@ -33,7 +36,10 @@ A complete version of `write-as-me-ko` should let the user:
 8. Build and validate a Profile Pack v2 artifact for repeatable agent setup.
 9. Use that writing setup for Korean reports, essays, blog posts, messages, and
    project documents.
-10. Keep private source samples out of git-tracked paths by default.
+10. Check existing drafts with local style-distance and AI-tell risk reports.
+11. Generate rewrite briefs that help an agent revise drafts without copying
+   private samples or inventing personal experience.
+12. Keep private source samples out of git-tracked paths by default.
 
 ## Positioning
 
@@ -71,6 +77,8 @@ style, judgment, and target format?"
   of being pasted into every chat.
 - Format before surface voice: reports should remain reports, messages should
   remain messages, and blog voice should not flatten every output.
+- Local evaluation before external checks: style-distance and rewrite briefs are
+  first-class local evidence; external detector scores are optional smoke tests.
 
 ## Non-Goals
 

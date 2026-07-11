@@ -187,11 +187,37 @@ Acceptance:
 - Tests prove demo reports include profile/style/privacy evidence without raw sample text.
 - `npm run docs:check` covers the demo report command.
 
+## Stage 9: AI-Tell and Style-Distance Evaluation
+
+Status: implemented.
+
+Scope:
+
+- Add local held-out sample evaluation so profile quality is tested against
+  real user prose that was not used to build the profile.
+- Compare three routes for the same writing task: human baseline, generic LLM
+  draft, and profile-guided draft.
+- Add deterministic style-distance checks using existing Korean style signals
+  before any external detector smoke test.
+- Add an agent revision loop that points to concrete AI-tell risks instead of
+  promising detector bypass.
+- Keep external Copykiller/GPT Killer scores optional and manual, recorded only
+  as non-authoritative smoke-test evidence.
+
+Acceptance:
+
+- Tests cover local style-distance scoring without storing raw private samples.
+- A documented smoke-test workflow exists for human, generic LLM, and
+  profile-guided draft comparisons.
+- Reports separate implemented local checks from optional external detector
+  observations.
+- Docs continue to state that the project does not guarantee AI detector bypass.
+- `npm run docs:check` runs the Stage 9 style-distance and rewrite brief demo.
+
 ## Deferred Work
 
 - Web UI.
 - Hosted profile storage.
-- Detector-style scoring claims.
 - Multi-language expansion.
 - Automatic voice cloning or personality simulation.
 - Morphology-aware Korean tokenization.
