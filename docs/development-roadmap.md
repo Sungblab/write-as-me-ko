@@ -214,6 +214,33 @@ Acceptance:
 - Docs continue to state that the project does not guarantee AI detector bypass.
 - `npm run docs:check` runs the Stage 9 style-distance and rewrite brief demo.
 
+## Stage 10: Held-Out Real-Sample and Rewrite Loop
+
+Status: implemented.
+
+Scope:
+
+- Prepare a local held-out workspace that excludes selected samples from the
+  training profile pack.
+- Keep held-out sample text out of generated manifests while retaining path,
+  route, hash, and character-count evidence for local reproducibility.
+- Compare a held-out human sample against generic and profile-guided drafts.
+- Prepare a rewrite loop workspace for existing drafts with a before report,
+  agent rewrite brief, and machine-readable manifest.
+- Check a rewritten draft against the original using local style-distance and
+  AI-tell risk counts.
+
+Acceptance:
+
+- Tests cover held-out profile preparation without copying held-out text into
+  manifests.
+- Tests cover held-out comparison and rewrite before/after checks.
+- CLI exposes `heldout prepare`, `heldout compare`, `rewrite loop`, and
+  `rewrite check`.
+- Reports continue to separate local style evidence from external AI detector
+  smoke-test observations.
+- `npm run docs:check` runs the Stage 10 held-out and rewrite-loop demo.
+
 ## Deferred Work
 
 - Web UI.

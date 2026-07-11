@@ -280,12 +280,10 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def build_profile_pack(samples_root: Path, output_dir: Path) -> ProfilePackResult:
-    samples_root = Path(samples_root)
+def build_profile_pack_from_samples(samples: list[PackSample], output_dir: Path) -> ProfilePackResult:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    samples = collect_pack_samples(samples_root)
     profile = _profile_json(samples)
     manifest = _sample_manifest(samples)
 
@@ -312,3 +310,8 @@ def build_profile_pack(samples_root: Path, output_dir: Path) -> ProfilePackResul
         privacy_report_path=privacy_report_path,
         coverage_report_path=coverage_report_path,
     )
+
+
+def build_profile_pack(samples_root: Path, output_dir: Path) -> ProfilePackResult:
+    samples_root = Path(samples_root)
+    return build_profile_pack_from_samples(collect_pack_samples(samples_root), output_dir)

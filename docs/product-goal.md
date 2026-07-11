@@ -15,6 +15,9 @@ reviewers can see the tool's safety and behavior without reading private samples
 Stage 9 adds local style-distance and rewrite-brief checks so existing drafts can
 be evaluated and revised against the profile before any optional external smoke
 test.
+Stage 10 adds local held-out evaluation and rewrite checks so users can test
+profile-guided drafts against real prose excluded from profile building, then
+verify whether an agent rewrite moved a draft closer to the profile.
 The goal is not to make AI text bypass detectors or perfectly clone a person.
 The goal is to stop repeating the same style and format instructions and make
 future drafting start from a reviewed local writing setup.
@@ -39,7 +42,11 @@ A complete version of `write-as-me-ko` should let the user:
 10. Check existing drafts with local style-distance and AI-tell risk reports.
 11. Generate rewrite briefs that help an agent revise drafts without copying
    private samples or inventing personal experience.
-12. Keep private source samples out of git-tracked paths by default.
+12. Prepare held-out evaluations that exclude selected local samples from the
+   training profile pack.
+13. Check rewritten drafts against originals with before/after style-distance
+   and AI-tell risk counts.
+14. Keep private source samples out of git-tracked paths by default.
 
 ## Positioning
 
@@ -79,6 +86,8 @@ style, judgment, and target format?"
   remain messages, and blog voice should not flatten every output.
 - Local evaluation before external checks: style-distance and rewrite briefs are
   first-class local evidence; external detector scores are optional smoke tests.
+- Held-out before confidence: profile-guided output should be tested against
+  samples that were not used to build the profile before making quality claims.
 
 ## Non-Goals
 
